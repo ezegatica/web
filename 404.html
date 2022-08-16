@@ -105,11 +105,10 @@
 
 <body onload="tW();">
     <div class="landing">
-        <h1 id="text"><noscript>LINK_NO_VALIDO</noscript></h1>
+        <h1 id="text"><noscript>ESTAMOS_PERDIDOS?</noscript></h1>
         <a href="/" style="font-family: inherit; font-size: inherit">
             <h3 id="text2"><noscript>VOLVER_A_LA_PAGINA_PRINCIPAL</noscript></h3>
         </a>
-        <h3 id="text3"></h3>
         <br />
         <div id="espacio">
             <a target="_blank" rel="noreferrer" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
@@ -119,18 +118,15 @@
     <!-- <script src="./js/index.js"></script> -->
     <script>
         var na = 0;
-        var txt = "LINK_NO_VALIDO";
+        var txt = "ESTAMOS_PERDIDOS?";
         var txt2 = "VOLVER_A_LA_PAGINA_PRINCIPAL";
-        var txt3 = window.location.href;
         var speed = 20;
         function tW() {
             if (na < txt2.length + window.location.href.length) {
                 var txtPrint = txt.toUpperCase();
                 var txtPrint2 = txt2.toUpperCase();
-                var txt3Print2 = txt3.toUpperCase();
                 document.getElementById("text").innerHTML += txtPrint.charAt(na);
                 document.getElementById("text2").innerHTML += txtPrint2.charAt(na);
-                document.getElementById("text3").innerHTML += txt3Print2.charAt(na);
                 na++;
                 setTimeout(tW, speed);
             }
