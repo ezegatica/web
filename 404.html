@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <!-- <link rel="stylesheet" href="css/font-awesome-essential.css"> -->
+    <!-- <link rel="stylesheet" href="css/main.css"> -->
+    <style>
+        @font-face {
+            font-family: clock;
+            src: url(./assets/fonts/clock.woff);
+            font-display: swap
+        }
+
+        * {
+            overflow-y: hidden;
+            -webkit-font-smoothing: antialiased;
+            text-shadow: rgba(0, 0, 0, .01) 0 0 1px
+        }
+
+        ::selection {
+            color: #fff
+        }
+
+        :root {
+            --padd: 10px
+        }
+
+        body {
+            font-family: clock;
+            background: #000;
+            color: #0f0;
+            margin: 0;
+            padding: 0;
+            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGZpbHRlciBpZD0iaSIgeD0iMCIgeT0iMCI+CiAgICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMSAwIDAgMCAwICAwIDEgMCAwIDAgIDAgMCAxIDAgMCAgMCAwIDAgMCAwIi8+CiAgPC9maWx0ZXI+CiAgPGZpbHRlciBpZD0ibiIgeD0iMCIgeT0iMCI+CiAgICA8ZmVUdXJidWxlbmNlIHR5cGU9InR1cmJ1bGVuY2UiIGJhc2VGcmVxdWVuY3k9Ii43IiByZXN1bHQ9ImZ1enoiIG51bU9jdGF2ZXM9IjIiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz4KICAgIDxmZUNvbXBvc2l0ZSBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJmdXp6IiBvcGVyYXRvcj0iYXJpdGhtZXRpYyIgazE9IjAiIGsyPSIxIiBrMz0iLTczIiBrND0iLjAxIi8+CiAgPC9maWx0ZXI+CiAgPHJlY3Qgd2lkdGg9IjEwMiUiIGhlaWdodD0iMTAyJSIgc3R5bGU9IiIvPgogIDxyZWN0IHg9Ii05LjYyOCIgeT0iLTQuOTk2IiB3aWR0aD0iMTk1OC40IiBoZWlnaHQ9IjExMDEuNiIgZmlsbD0iI2ZmZmZmZiIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIxIi8+CiAgPHJlY3QgeD0iMTUuMTA4IiB5PSIwLjQ1MiIgd2lkdGg9IjE5NTguNCIgaGVpZ2h0PSIxMTAxLjYiIGZpbGw9IiMwMzAzMWEiIGZpbHRlcj0idXJsKCNpKSIgb3BhY2l0eT0iMSIvPgo8L3N2Zz4=');
+
+        }
+
+        .landing {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            text-align: center
+        }
+
+        .landing #text {
+            max-width: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+            letter-spacing: .15em
+        }
+
+        #text::after {
+            content: "|";
+            animation: .5s pimpum ease infinite
+        }
+
+        #text2 {
+            text-decoration: underline;
+        }
+
+        @keyframes pimpum {
+            0% {
+                opacity: 0
+            }
+
+            100% {
+                opacity: 1
+            }
+        }
+
+        a {
+            color: #0f0;
+            font-family: monospace
+        }
+
+        a:hover {
+            color: #fff !important
+        }
+
+        .rrss {
+            animation: 2s pimpum;
+            font-size: 24px;
+            padding-left: var(--padd);
+            padding-right: var(--padd)
+        }
+
+        #navbar {
+            animation: 2s pimpum
+        }
+
+        .fa {
+            font-size: 24px !important
+        }
+    </style>
+
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#00ff00" />
+    <title>Link no encontrado!</title>
+    <meta name="description" content="Sitio web de Ezequiel Gatica">
+</head>
+
+<body onload="tW();">
+    <div class="landing">
+        <h1 id="text"><noscript>LINK_NO_VALIDO</noscript></h1>
+        <a href="/" style="font-family: inherit; font-size: inherit">
+            <h3 id="text2"><noscript>VOLVER_A_LA_PAGINA_PRINCIPAL</noscript></h3>
+        </a>
+        <h3 id="text3"></h3>
+        <br />
+        <div id="espacio">
+            <a target="_blank" rel="noreferrer" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                style="color: transparent">:P</a>
+        </div>
+    </div>
+    <!-- <script src="./js/index.js"></script> -->
+    <script>
+        var na = 0;
+        var txt = "LINK_NO_VALIDO";
+        var txt2 = "VOLVER_A_LA_PAGINA_PRINCIPAL";
+        var txt3 = window.location.href;
+        var speed = 20;
+        function tW() {
+            if (na < txt2.length + window.location.href.length) {
+                var txtPrint = txt.toUpperCase();
+                var txtPrint2 = txt2.toUpperCase();
+                var txt3Print2 = txt3.toUpperCase();
+                document.getElementById("text").innerHTML += txtPrint.charAt(na);
+                document.getElementById("text2").innerHTML += txtPrint2.charAt(na);
+                document.getElementById("text3").innerHTML += txt3Print2.charAt(na);
+                na++;
+                setTimeout(tW, speed);
+            }
+        }
+    </script>
+</body>
+
+</html>
