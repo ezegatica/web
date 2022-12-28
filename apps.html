@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <style>
+        @font-face {
+            font-family: clock;
+            src: url(./assets/fonts/clock.woff);
+            font-display: swap
+        }
+
+        ::selection {
+            color: #fff
+        }
+
+        body {
+            font-family: clock;
+            background: #000;
+            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGZpbHRlciBpZD0iaSIgeD0iMCIgeT0iMCI+CiAgICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMSAwIDAgMCAwICAwIDEgMCAwIDAgIDAgMCAxIDAgMCAgMCAwIDAgMCAwIi8+CiAgPC9maWx0ZXI+CiAgPGZpbHRlciBpZD0ibiIgeD0iMCIgeT0iMCI+CiAgICA8ZmVUdXJidWxlbmNlIHR5cGU9InR1cmJ1bGVuY2UiIGJhc2VGcmVxdWVuY3k9Ii43IiByZXN1bHQ9ImZ1enoiIG51bU9jdGF2ZXM9IjIiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz4KICAgIDxmZUNvbXBvc2l0ZSBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJmdXp6IiBvcGVyYXRvcj0iYXJpdGhtZXRpYyIgazE9IjAiIGsyPSIxIiBrMz0iLTczIiBrND0iLjAxIi8+CiAgPC9maWx0ZXI+CiAgPHJlY3Qgd2lkdGg9IjEwMiUiIGhlaWdodD0iMTAyJSIgc3R5bGU9IiIvPgogIDxyZWN0IHg9Ii05LjYyOCIgeT0iLTQuOTk2IiB3aWR0aD0iMTk1OC40IiBoZWlnaHQ9IjExMDEuNiIgZmlsbD0iI2ZmZmZmZiIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIxIi8+CiAgPHJlY3QgeD0iMTUuMTA4IiB5PSIwLjQ1MiIgd2lkdGg9IjE5NTguNCIgaGVpZ2h0PSIxMTAxLjYiIGZpbGw9IiMwMzAzMWEiIGZpbHRlcj0idXJsKCNpKSIgb3BhY2l0eT0iMSIvPgo8L3N2Zz4=');
+            color: #0f0;
+            margin: 0;
+            padding: 0;
+            overflow-y: hidden;
+            -webkit-font-smoothing: antialiased;
+            text-shadow: rgba(0, 0, 0, .01) 0 0 1px
+        }
+
+        main {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            text-align: center
+        }
+
+        main>h1 {
+            max-width: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+            margin-bottom: 2rem;
+            letter-spacing: .15em
+        }
+
+        main>h1::after {
+            content: "|";
+            animation: .5s titilar ease infinite
+        }
+
+        @keyframes titilar {
+            0% {
+                opacity: 0
+            }
+
+            100% {
+                opacity: 1
+            }
+        }
+
+        card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        card {
+            background: #000;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #fff;
+            text-align: center;
+            transition: .125s ease;
+        }
+
+        card>p {
+            font-family: monospace;
+            font-style: italic;
+        }
+
+        card:hover {
+            box-shadow: 0 0 20px #fff;
+            animation: 1s beam ease infinite;
+        }
+    </style>
+
+    <link rel="preload" href="./assets/fonts/clock.woff" as="font" type="font/woff2" crossorigin />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#00ff00" />
+    <title>
+        </Eze apps>
+    </title>
+    <meta name="description" content="Aplicaciones de Ezequiel Gatica">
+</head>
+
+<body>
+    <main>
+        <h1>Apps</h1>
+        <card-container>
+            <card>
+                <h2>App 1</h2>
+                <p>App 1 description</p>
+                <a href="https://ezegatica.com" target="_blank" rel="noopener noreferrer">Go to app 1</a>
+            </card>
+            <card>
+                <h2>App 2</h2>
+                <p>App 2 description</p>
+                <a href="https://ezegatica.com" target="_blank" rel="noopener noreferrer">Go to app 2</a>
+            </card>
+            <card>
+                <h2>App 3</h2>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, dolore! Dicta, corporis nostrum vel modi minima reprehenderit maxime, saepe quas velit libero eos culpa harum dolores, provident assumenda praesentium tempora.</p>
+                <a href="https://ezegatica.com" target="_blank" rel="noopener noreferrer">Go to app 3</a>
+            </card>
+        </card-container>
+    </main>
+</body>
+
+</html>

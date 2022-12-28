@@ -132,83 +132,6 @@
         }
     </style>
 
-    <style>
-        :root {
-            --border-size: 0.125rem;
-            --duration: 250ms;
-            --ease: cubic-bezier(0.215, 0.61, 0.355, 1);
-            --font-family: "Roboto Mono", "Liberation Mono", Consolas, monospace;
-            --color-primary: #141821;
-            --color-secondary: lime;
-            --color-tertiary: dodgerblue;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --space: 1rem;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        .diboton {
-            margin: 0 auto;
-            display: grid;
-            place-items: center;
-            padding: calc(var(--space) * 0);
-            max-width: 400px;
-            opacity: 100%;
-        }
-
-        .multi-button {
-            display: flex;
-            width: 100%;
-            box-shadow: var(--shadow) 4px 4px;
-        }
-
-        .multi-button button {
-            flex-grow: 1;
-            cursor: pointer;
-            position: relative;
-            padding:
-                calc(var(--space) / 1.125) var(--space) var(--space);
-            border: var(--border-size) solid black;
-            color: var(--color-secondary);
-            background-color: transparent;
-            font-size: 1.5rem;
-            font-family: var(--font-family);
-            text-transform: lowercase;
-            text-shadow: var(--shadow) 2px 2px;
-            transition: flex-grow var(--duration) var(--ease);
-        }
-
-        .multi-button button+button {
-            border-left: var(--border-size) solid black;
-            margin-left: calc(var(--border-size) * -1);
-        }
-
-        .multi-button button:hover,
-        .multi-button button:focus {
-            flex-grow: 2;
-            outline: none;
-            text-decoration: underline;
-            text-shadow: none;
-        }
-
-        .multi-button button:focus {
-            outline: var(--border-size) dashed var(--color-primary);
-            outline-offset: calc(var(--border-size) * -3);
-        }
-
-        .multi-button:hover button:focus:not(:hover) {
-            flex-grow: 1;
-            color: var(--color-secondary);
-            /* background-color: var(--color-primary); */
-            outline-color: var(--color-tertiary);
-        }
-
-        .multi-button button:active {
-            transform: translateY(var(--border-size));
-        }
-    </style>
     <link rel="preload" href="./assets/fonts/FontAwesome.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="./assets/fonts/clock.woff" as="font" type="font/woff2" crossorigin />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
@@ -249,22 +172,7 @@
             <a target="_blank" rel="noreferrer" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                 style="color: transparent">:P</a>
         </div>
-        <!-- <div class="multi-button diboton" id="botones" style="display: none;">
-            <button onclick="location.href = '/apps';"><i class="fa fa-folder rrss"></i>
-                <t>mis apps</t>
-            </button>
-        </div>
-        <noscript>
-            <div class="multi-button diboton" id="botones">
-                <button><a href="/apps"><i class="fa fa-folder rrss"></i>
-                    <t>mis apps</t>
-                </a>
-            </button>
-            </div>
-
-        </noscript> -->
     </div>
-    <!-- <script src="./js/index.js"></script> -->
     <script
         lang="javascript">var na = 0, txt = "EZEQUIEL_GATICA", speed = 150, redes = document.getElementById("redes"), espacio = document.getElementById("espacio"), navbar = document.getElementById("navbar"); function tW() { if (na < txt.length) { var txtPrint = txt.toUpperCase(); document.getElementById("text").innerHTML += txtPrint.charAt(na), na++, setTimeout(tW, speed) } setTimeout(() => { showRedes() }, 2500) } function showRedes() { redes.style.display = "block", espacio.style.display = "none" }</script>
 </body>
