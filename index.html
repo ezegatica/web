@@ -66,6 +66,11 @@
             font-family: clock;
             background: #000;
             background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGZpbHRlciBpZD0iaSIgeD0iMCIgeT0iMCI+CiAgICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMSAwIDAgMCAwICAwIDEgMCAwIDAgIDAgMCAxIDAgMCAgMCAwIDAgMCAwIi8+CiAgPC9maWx0ZXI+CiAgPGZpbHRlciBpZD0ibiIgeD0iMCIgeT0iMCI+CiAgICA8ZmVUdXJidWxlbmNlIHR5cGU9InR1cmJ1bGVuY2UiIGJhc2VGcmVxdWVuY3k9Ii43IiByZXN1bHQ9ImZ1enoiIG51bU9jdGF2ZXM9IjIiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz4KICAgIDxmZUNvbXBvc2l0ZSBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJmdXp6IiBvcGVyYXRvcj0iYXJpdGhtZXRpYyIgazE9IjAiIGsyPSIxIiBrMz0iLTczIiBrND0iLjAxIi8+CiAgPC9maWx0ZXI+CiAgPHJlY3Qgd2lkdGg9IjEwMiUiIGhlaWdodD0iMTAyJSIgc3R5bGU9IiIvPgogIDxyZWN0IHg9Ii05LjYyOCIgeT0iLTQuOTk2IiB3aWR0aD0iMTk1OC40IiBoZWlnaHQ9IjExMDEuNiIgZmlsbD0iI2ZmZmZmZiIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIxIi8+CiAgPHJlY3QgeD0iMTUuMTA4IiB5PSIwLjQ1MiIgd2lkdGg9IjE5NTguNCIgaGVpZ2h0PSIxMTAxLjYiIGZpbGw9IiMwMzAzMWEiIGZpbHRlcj0idXJsKCNpKSIgb3BhY2l0eT0iMSIvPgo8L3N2Zz4=');
+            /* Make background-image not repeat but expand to fit the entire screen. Also it should stay in absolute position every time, so when resizing the window, it shouldnt change*/
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
             color: #0f0;
             margin: 0;
             padding: 0
