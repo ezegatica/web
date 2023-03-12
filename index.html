@@ -62,12 +62,9 @@
             --padd: 10px
         }
 
-        body {
+        html {
             font-family: clock;
             color: #0f0;
-            margin: 0;
-            padding: 0;
-
             --s: 100px;
             /* control the size */
             --c1: #0f0;
@@ -127,8 +124,13 @@
             }
         }
 
-        .landing {
+        body {
+            margin: 0;
+            padding: 0;
             background: rgba(0, 0, 0, .95);
+        }
+
+        .landing {
             display: inline-flex;
             flex-direction: column;
             justify-content: center;
@@ -180,12 +182,35 @@
             animation: 2s pimpum;
         }
 
-        #navbar {
-            animation: 2s pimpum
-        }
-
         .fa {
             font-size: 24px !important
+        }
+
+        .musica {
+            position: absolute;
+        }
+
+        .musica>span {
+            text-transform: uppercase;
+        }
+
+
+        #sp_cover {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            /* make it spin */
+            animation: spin 15s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg)
+            }
+
+            100% {
+                transform: rotate(360deg)
+            }
         }
     </style>
 
@@ -199,7 +224,17 @@
     <meta name="description" content="Sitio web de Ezequiel Gatica">
 </head>
 
-<body onload="tW();">
+<body onload="init();">
+    <div class="musica" style="display: none;">
+        <span>Escuchando:</span> <br />
+        <a href="" id="sp_img_wrapper" target="_blank">
+            <img src="" alt="" id="sp_cover"> <br>
+        </a>
+        <a href="/" id="sp_title" target="_blank"></a> <br>
+        <a id="sp_album" target="_blank"></a>
+    </div>
+
+
     <div class="landing">
         <h1 id="text"><noscript>EZEQUIEL_GATICA</noscript></h1>
         <br />
@@ -230,8 +265,44 @@
                 style="color: transparent">:P</a>
         </div>
     </div>
-    <script
-        lang="javascript">var na = 0, txt = "EZEQUIEL_GATICA", speed = 150, redes = document.getElementById("redes"), espacio = document.getElementById("espacio"), navbar = document.getElementById("navbar"); function tW() { if (na < txt.length) { var txtPrint = txt.toUpperCase(); document.getElementById("text").innerHTML += txtPrint.charAt(na), na++, setTimeout(tW, speed) } setTimeout(() => { showRedes() }, 2500) } function showRedes() { redes.style.display = "block", espacio.style.display = "none" }</script>
+    <script lang="javascript">
+        var na = 0, txt = "EZEQUIEL_GATICA", speed = 150, redes = document.getElementById("redes"), espacio = document.getElementById("espacio");
+        function init() { tW(); spotify(); }
+        function tW() {
+            if (na < txt.length) {
+                var txtPrint = txt.toUpperCase();
+                document.getElementById("text").innerHTML += txtPrint.charAt(na);
+                na++;
+                setTimeout(tW, speed)
+            }
+            setTimeout(() => { showRedes() }, 2500)
+        }
+        function showRedes() {
+            redes.style.display = "block";
+            espacio.style.display = "none";
+        }
+        async function spotify() {
+            const musica = document.querySelector(".musica");
+            const e_title = document.getElementById("sp_title");
+            const e_cover = document.getElementById("sp_cover");
+            const e_album = document.getElementById("sp_album");
+            const e_cover_wrapper = document.getElementById("sp_img_wrapper");
+            const song = await fetch('https://spotify.eze.net.ar', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json());
+            e_title.innerHTML = `${song.artist} - ${song.title}`;
+            e_title.href = song.link;
+            e_cover_wrapper.href = song.link;
+            e_cover.src = song.albumArt;
+            e_cover.alt = `${song.artist} - ${song.title}`;
+            e_album.innerHTML = song.album;
+
+            musica.style.display = "block";
+        }
+    </script>
 </body>
 
 </html>
