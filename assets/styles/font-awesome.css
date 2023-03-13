@@ -1,0 +1,36 @@
+@font-face {
+  font-family: FontAwesome;
+  src: url(../fonts/FontAwesome.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 24px !important;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fa-github:before {
+  content: "\f09b";
+}
+
+.fa-twitter:before {
+  content: "\f099";
+}
+
+.fa-linkedin-square:before {
+  content: "\f08c";
+}
+
+.fa-instagram:before {
+  content: "\f16d";
+}
+
+.fa-folder:before {
+  content: "\f07b";
+}
