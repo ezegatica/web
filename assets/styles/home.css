@@ -1,0 +1,35 @@
+.rrss {
+  animation: 2s aparecer;
+  font-size: 24px;
+  padding-left: var(--padd);
+  padding-right: var(--padd);
+}
+
+#botones {
+  animation: 2s aparecer;
+}
+
+.musica {
+  position: absolute;
+}
+
+.musica > span {
+  text-transform: uppercase;
+}
+
+#sp_cover {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  animation: spin 15s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
