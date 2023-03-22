@@ -19,10 +19,10 @@
 <body onload="init();">
     <div class="musica" style="display: none;">
         <span>Escuchando:</span> <br />
-        <a href="" id="sp_img_wrapper" target="_blank">
-            <img src="" alt="" id="sp_cover"> <br>
+        <a href="https://ezegatica.com" id="sp_img_wrapper" target="_blank">
+            <img src="/" alt="" id="sp_cover"> <br>
         </a>
-        <a href="/" id="sp_title" target="_blank"></a> <br>
+        <a href="https://ezegatica.com" id="sp_title" target="_blank"></a> <br>
         <a id="sp_album" target="_blank"></a>
     </div>
 
@@ -79,7 +79,7 @@
             const e_cover = document.getElementById("sp_cover");
             const e_album = document.getElementById("sp_album");
             const e_cover_wrapper = document.getElementById("sp_img_wrapper");
-            const song = await fetch('https://spotify.eze.net.ar', {
+            const song = await fetch('https://walter.eze.net.ar', {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
