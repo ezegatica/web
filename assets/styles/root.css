@@ -2,6 +2,7 @@
   font-family: clock;
   src: url(../fonts/clock.woff);
   font-display: swap;
+  unicode-range: U+0041-005A, U+005F, U+0061-007A;
 }
 
 * {
