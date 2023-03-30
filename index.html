@@ -85,6 +85,9 @@
                     'Content-Type': 'application/json'
                 }
             }).then(response => response.json());
+            if (song?.error){
+                return;
+            }
             e_title.innerHTML = `${song.artist} - ${song.title}`;
             e_title.href = song.link;
             e_cover_wrapper.href = song.link;
