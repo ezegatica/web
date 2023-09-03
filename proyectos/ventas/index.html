@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- ¿Notaron que el fondo va mas lento? -->
 
 <head>
     <meta name="viewport" content="width=device-width">
@@ -80,10 +81,14 @@
                 alt="Diagrama de secuencia de la revalidacion de un producto">
             <p>
                 Esto se hace todo automaticamente, sin tener que tocar nada (mas que el panel de administrador, claro)
-                en aproximadamente 1-2 segundos a partir de que se genera el cambio.
+                en aproximadamente 1-2 segundos a partir de que se genera el cambio, y a traves de un canal seguro, por
+                lo que aunque el usuario sepa cual es el endpoint (ya que el codigo fuente del proyecto es publico) el
+                token de comunicación esta almacenado en un Vercel KV Storage, así que no puede ser accedido por nadie,
+                y puede ser cambiado en 2 simples clicks.
             </p>
         </article>
     </main>
+    <script src="../open-img-on-click.js"></script>
 </body>
 
 </html>

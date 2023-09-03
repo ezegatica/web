@@ -3,10 +3,47 @@ article p {
     font-size: 1rem;
 }
 
+article img{
+    width: 100%;
+    height: auto;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+}
+
+article img:hover {
+    cursor: pointer;
+}
+
+/* limit the article img on big screens */
+@media screen and (min-width: 900px) {
+    article img {
+        max-width: 40%;
+    }
+}
+
 html {
     animation: move 30s infinite;
 }
 
 #typewrite {
     margin-top: 3rem!important;
+}
+
+@media screen and (max-width: 600px) {
+    article {
+        max-width: 90%;
+    }
+}
+
+@media screen and (min-width: 600px) and (max-width: 900px) {
+    article {
+        max-width: 80%;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    article {
+        max-width: 70%;
+    }
 }

@@ -6,6 +6,7 @@
 }
 
 * {
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
 }
@@ -96,7 +97,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-width: 400px;
+  min-width: 300px;
   min-height: 100vh;
   text-align: center;
 }
@@ -145,4 +146,25 @@ hr {
 
 hr:hover {
   border: 1px solid #fff;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1a4f1a; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #14b814; 
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #319b31; 
 }
