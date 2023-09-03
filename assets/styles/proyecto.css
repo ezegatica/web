@@ -1,0 +1,12 @@
+article p {
+    font-family: monospace;
+    font-size: 1rem;
+}
+
+html {
+    animation: move 30s infinite;
+}
+
+#typewrite {
+    margin-top: 3rem!important;
+}

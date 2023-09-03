@@ -4,7 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="../../assets/styles/root.css" />
-    <link rel="stylesheet" href="../../assets/styles/proyectos.css" />
+    <link rel="stylesheet" href="../../assets/styles/proyecto.css" />
     <link rel="preload" href="../../assets/fonts/clock.woff" as="font" type="font/woff2" crossorigin />
     <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon">
     <meta name="theme-color" content="#00ff00" />
@@ -16,12 +16,73 @@
 
 <body>
     <div class="go-back">
-        <a href="/proyectos/" target="_self" rel="noopener noreferrer">   
-            < GO BACK
-        </a>
+        <a href="../" target="_self" rel="noopener noreferrer">
+            < GO BACK </a>
     </div>
     <main>
         <h1 id="typewrite">VENTAS</h1>
+        <article>
+            <h2 id="descripcion">DESCRIPCION</h2>
+            <p>
+                Este proyecto nació como un proyecto "estrella", queriendo decir que estoy
+                constantemente cambiandolo ya que voy aplicando todos mis ultimos conocimientos sobre
+                tecnologías, ademas de como una excusa para aprender más de lo que me interesa.
+            </p>
+            <p>
+                Si bien el proyecto no es muy complejo, me
+                sirve para practicar y aprender sin la necesidad de generar algo desde cero para cada cosa nueva que
+                quiera probar, por lo que es una buena base.
+            </p>
+            <hr>
+            <h2 id="tecnologias">TECNOLOGIA</h2>
+            <p>El proyecto utiliza Next.JS 13 con el nuevo App Directory. Esto permite generar un sistema de <a
+                    href="https://nextjs.org/docs/pages/building-your-application/data-fetching/incremental-static-regeneration"
+                    target="_blank" rel="noopener noreferrer">Generacion Estatica Incremental (ISR)</a> para una
+                navegacion instantanea, con los datos cacheados y revalidados cuando
+                cambien via el panel de administrador.
+            </p>
+            <p>Si es la primera vez que un usuario entra a la pagina de un producto, ya sea porque se invalidó la cache
+                o porque es un producto nuevo, se va a tener que ir a buscar la pagina a la base de datos, la cual va a
+                ser posteriormente cacheada para una posterior rapida devolución. Podemos diagramar el funcionamiento
+                con el siguiente esquema:</p>
+            <img src="https://i.ezegatica.com/20230903-2305w.png"
+                alt="Diagrama de secuencia de un producto no cacheado">
+            <p>
+                Ya que estamos usando ISR, una vez que tenga la pagina generada, la misma va a ser cacheada en el
+                servidor de Vercel, por lo que la proxima vez que un usuario entre a la pagina, va a ser devuelta
+                instantaneamente, sin necesidad de ir a buscarla a la base de datos ni de ir siquiera a la cache, ya que
+                el archivo .html está ya generado. Si conoces algo de React sabes que antes si o si al menos deberías
+                pegarle a la cache para traerte los datos, pero en este caso no hace falta, ya que el codigo a devolver
+                esta pre-generado y guardado en el servidor de la aplicación.
+            </p>
+            <p>
+                Esto significa que la siguiente persona que visite mi pagina, va a tener una experiencia instantanea la
+                cual se puede diagramar de la siguiente manera.
+            </p>
+            <img src="https://i.ezegatica.com/20230903-2314T.png" alt="Diagrama de secuencia de un producto cacheado">
+            <p>
+                Esto trae un problema, ya que como la pagina web ya está generada, si yo cambio algun dato de un
+                producto, ya sea el precio, foto o titulo, esta nunca se va a actualizar. Entonces tuve que investigar
+                una forma de poder decirle a la pagina "hay un cambio! traete lo ultimo" para que pueda refrescar esta
+                pagina generada y poder ofrecer la misma experiencia instantanea sin problema.
+            </p>
+            <p>Acá es donde me encontré con este proyecto de uno de los desarrolladores de Next, <a
+                    href="https://github.com/leerob/on-demand-isr" target="_blank">leerob/on-demand-isr</a> el cual
+                implementa algo muy interesante, llamado On Demand ISR. <br>
+                Basicamente resuelve lo que decía arriba. Expongo un webhook seguro en mi sitio, el cual cuando recibe
+                una solicitud especial, ignora la
+                cache, elimina la data vieja y genera una nueva pagina del producto, la cual es cacheada de la misma
+                forma
+                que vemos en
+                el diagrama 1.
+            </p>
+            <img src="https://i.ezegatica.com/20230903-2331v.png"
+                alt="Diagrama de secuencia de la revalidacion de un producto">
+            <p>
+                Esto se hace todo automaticamente, sin tener que tocar nada (mas que el panel de administrador, claro)
+                en aproximadamente 1-2 segundos a partir de que se genera el cambio.
+            </p>
+        </article>
     </main>
 </body>
 
