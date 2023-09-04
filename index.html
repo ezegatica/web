@@ -90,7 +90,7 @@
                     'Content-Type': 'application/json'
                 }
             }).then(response => response.json());
-            if (song?.error){
+            if (song?.error) {
                 return;
             }
             e_title.innerHTML = `${song.artist} - ${song.title}`;
@@ -103,6 +103,7 @@
             musica.style.display = "block";
         }
     </script>
+    <script src="/aviso.js"></script>
 </body>
 
 </html>
