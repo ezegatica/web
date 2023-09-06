@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- ¿Notaron que el fondo va mas lento? -->
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../../assets/styles/root.css" />
+    <link rel="stylesheet" href="../../assets/styles/proyecto.css" />
+    <link rel="preload" href="../../assets/fonts/clock.woff" as="font" type="font/woff2" crossorigin />
+    <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#00ff00" />
+    <title>
+        </Eze proyecto='listo'>
+    </title>
+    <meta name="description" content="Proyectos de Ezequiel Gatica: Listo, comprá comida y retirala por el local.">
+</head>
+
+<body>
+    <div class="go-back">
+        <a href="/proyectos/" target="_self" rel="noopener noreferrer">
+            < ATRAS </a>
+    </div>
+    <main>
+        <h1 id="typewrite">LISTO</h1>
+        <article>
+            <h2 id="descripcion">DESCRIPCION</h2>
+            <p>
+                Listo nació (y murió) en 2020 como un proyecto escolar para la materia de Proyecto Anual del secundario.
+                Se
+                nos había ocurrido junto a 2 compañeros de realizar una plataforma que permitía realizar un pedido de
+                comida
+                y retirarlo por tus propios medios. Esto reducía tiempos de espera, ya que eliminabas filas de espera
+                mientras se preparaba tu pedido y ademas disminuias tu exposicion al COVID-19.
+            </p>
+            <p>
+                Para esto cabe destacar 2 cosas: Era Junio 2020, y la pandemia estaba en su pico, por lo que estabamos
+                tratando de crear algo para tener la menor cantidad de interaccion con otras personas. La segunda era
+                que no había ninguna plataforma conocida en esa epoca que ofrezca esto. Recien en Enero de 2021 se
+                empezaron a añadir estas funcionalidades.
+            </p>
+
+            <hr>
+            <h2 id="tecnologias">TECNOLOGIA</h2>
+            <p>
+                Este fue mi primer proyecto serio relacionado a tecnologías web, asi que no tenia mucha idea de como
+                empezar. Me incliné por React ya que era una tecnología que me llamaba la atención y que me parecía
+                interesante. Tambien tuvimos que hacer una aplicación movil para que el usuario pueda seguir su pedido
+                mas facilmente, por lo que elegimos React Native (usando Expo).
+            </p>
+            <p>
+                Para poder comunicar ambas aplicaciones, asi como almacenar la informacion que generaban, usamos
+                Firebase/Firestore Realtime. Un servicio de la plataforma de Google que nos manejaba todo el manejo de
+                autenticacion, seguridad y bases de datos por nosotros. Esto nos vino como anillo al dedo ya que al
+                nadie del grupo tener experiencia con estas cosas, y al estar tan bien documentado, nos permitió
+                preocuparnos mas por la idea que teniamos que por como implementarla.
+            </p>
+            <p>
+                Al usar la misma base de datos, ambas aplicaciones lucían exactamente igual:
+            </p>
+            <img src="https://i.ezegatica.com/20230905-2354N.png"
+                alt="Captura de pantalla de la aplicación. Mostrando por un lado la aplicacion para celulares y por otro la aplicacion para computadoras. Ambas muestran los restaurantes disponibles para pedir.">
+            <p>
+                Por el lado del restaurante, tuvimos que brainstormear ideas para que pueda tener una interfaz que le
+                permita tener un paneo general de todos sus pedidos, asi tambien como un facil acceso al detalle de los
+                mismos. Como usabamos Trello para gestionar las tareas del proyecto, decidimos ir por un estilo Kanban
+                para las ordenes de los usuarios.
+            </p>
+            <img src="https://i.ezegatica.com/20230906-0001v.png" alt="Imagen del panel de control de pedidos.">
+            <p>
+                Si bien los pedidos no se podían 'arrastrar' como si se puede en Trello/Jira, habia un boton a los
+                costados de la tarjetita que te dejaban moverlo. Cada estado era especial, ya que al abrir el accordion
+                en cada columna mostraba diferentes datos sobre el pedido. Si estaba en preparacion, no hacía falta
+                mostrar el subtotal. Si estaba listo para retirar, no hacía falta mostrar el comentario para la cocina.
+                Esos detalles permitían tener una interfaz mas limpia y directa que nos gustó.
+            </p>
+            <p>
+                Si bien mirando ahora atras era un proyecto bastante simple, nos permitió aprender muchisimo sobre
+                nuevas tecnologías, asi como a trabajar en equipo y a resolver problemas que iban surgiendo en
+                desarrollo de manera rapida.
+                Nos divertimos muchisimo haciendolo y sentimos que quedó un buen producto final, ademas de que hicimos
+                una muy buena presentacion y a los profesores les encantó. Les dejo con la primera diapositiva y el lema
+                del proyecto:
+            </p>
+            <img src="https://i.ezegatica.com/20230906-0007g.jpeg" alt="Listo!">
+        </article>
+    </main>
+    <script src="/proyectos/open-img-on-click.js"></script>
+    <script src="/aviso.js"></script>
+</body>
+
+</html>
