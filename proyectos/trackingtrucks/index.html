@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- ¿Notaron que el fondo va mas lento? -->
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../../assets/styles/root.css" />
+    <link rel="stylesheet" href="../../assets/styles/proyecto.css" />
+    <link rel="preload" href="../../assets/fonts/clock.woff" as="font" type="font/woff2" crossorigin />
+    <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#00ff00" />
+    <title>
+        </Eze proyecto='tracking-trucks'>
+    </title>
+    <meta name="description"
+        content="Proyectos de Ezequiel Gatica: Tracking Trucks, comprá comida y retirala por el local.">
+</head>
+
+<body>
+    <div class="go-back">
+        <a href="/proyectos/" target="_self" rel="noopener noreferrer">
+            < ATRAS </a>
+    </div>
+    <main>
+        <h1 id="typewrite">TRACKING TRUCKS</h1>
+        <article>
+            <h2 id="descripcion">DESCRIPCION</h2>
+            <p>
+                "Se trata de un sistema de gestión y mantenimiento de flotas de transporte el cual va a
+                permitir un fácil acceso a la información que brindan los distintos sensores del vehículo y se los
+                brindará al usuario. Con estos datos cada compañía podrá facilitar el proceso de mantenimiento del
+                vehículo y de la actualización constante acerca de los papeles de cada vehículo"
+            </p>
+            <p>
+                Esa era la descripcion del proyecto el cual nació, tal como <a href="/proyectos/listo">Listo!</a>, en el
+                marco de la materia de Proyecto Anual del secundario. La idea era poder conectarnos a cualquier vehiculo
+                usando un aparato llamado <a href="https://es.wikipedia.org/wiki/OBD" target="_blank">OBD-II</a> para
+                poder leer todos
+                los datos que emite un vehiculo al conducir, tales como velocidad, nivel de combustible, temperatura del
+                motor, etc.
+            </p>
+            <p>Todos estos datos iban a ser captados por un telefono celular (usado por un conductor de camion) y se
+                iban a
+                enviar a una pagina web (usada por los gerentes/gestores) para su visualizacion y procesamiento. </p>
+            <h2 id="tecnologias">TECNOLOGIA</h2>
+            <p>
+                Considerando que eramos 6 personas en el grupo en total, dividimos el proyecto en 2 partes. Por un lado,
+                todas las vistas del Gestor (la pagina web) y por otro lado, la aplicacion del Conductor (la app de
+                celular). Debido a las limitaciones tecnicas de ese momento, la aplicacion del conductor la tuvimos que
+                hacer en React Native puro, ya que Expo no tenía librerias disponibles para comunicacion por Bluetooth
+                en ese momento, entonces el desarrollo si bien fue mucho mas rapido que si lo hubiesemos hecho en
+                Java/Swift, no fue tan fluido como si hubiesemos usado Expo. Para la pagina web, usamos React acompañado
+                de Socket.IO para hacer una comunicacion en tiempo real con el backend, el cual lo hicimos en Express y
+                MongoDB. Todo el proyecto fue escrito en JavaScript.
+            </p>
+            <hr>
+            <p>
+                Arrancando por la aplicacion movil, como dijimos al principio, requeria establecer una conexion con el
+                sensor OBD2, el cual es la misma interfaz que utilizan los talleres y los service para realizar un
+                diagnostico con los autos. Al conectarse, tenes acceso a todo lo que el auto emite, y podes leerlo y en
+                nuestro caso, lo enviamos al backend para que este realice un procesamiento de los mismos, el cual
+                hablaré despues. Un usuario pertenecía a una "compañía", y esta compañía tenia vehiculos. Vos al
+                arrancar un recorrido tenías que marcar cual era el quilometraje inicial, y al finalizar el recorrido
+                para poder calcular cuando se habia recorrido y si había alguna alerta que ejecutar (como si se acercaba
+                el service de cada 60.000 KM o un cambio de neumaticos).
+            </p>
+            <img src="https://i.ezegatica.com/20230906-0214K.png" alt="Tracking Trucks: Movil">
+            <hr>
+            <p>
+                Luego teníamos la aplicacion web. Esta estaba pensada para los supervisores, ya que no se concentraba en
+                un solo vehiculo sino en la flota en general. En esta se podía ver un paneo general del estado de cada
+                vehiculo, asi tambien como poder entrar al detalle de cada uno si lo deseaba. En este detalle podíamos
+                observar los ultimos datos enviados por el vehiculo, asi tambien como un grafico que mostraba la
+                evolucion de dicho dato en los ultimos 5 minutos. Uno de los grandes problemas que tuvimos fue que
+                tuvimos que encontrar un balance entre enviar la data siempre en tiempo real o en baches. Ya que si bien
+                lo mejor era tener siempre lo ultimo, ibamos a sobrecargar la base de datos con escrituras constantes,
+                entonces optamos por enviar la informacion en bloques de 5 minutos, asi el backend tenía tiempo de
+                procesar estos datos y poder mostrarlos correctamente.
+            </p>
+            <img src="https://i.ezegatica.com/20230906-0215u.png" alt="Tracking Trucks: Web">
+            <hr>
+            <p>
+                Ahora toca la parte mas extensa, que fue la que yo realicé por lo que es la que mas de antemano conozco,
+                el backend. Este proyecto personalmente me sirvió mucho para usarlo como excusa para aprender cosas
+                nuevas. Como el año pasado había aprendido React en frontend, este año me habia puesto como objetivo
+                aprender a hacer backend y poder conectarlo con el frontend correctamente, ademas de usar Sockets para
+                comunicar en tiempo real las aplicaciones entre 1 o mas nodos.
+            </p>
+            <p>
+                Es por eso que utilizamos Express para el backend, ya que es una herramienta bastante intuitiva y
+                basica, y muchisimas subherramientas que las voy a ir explicando a lo largo de esta seccion. Arrancando
+                por la primera y la mas importante:
+            </p>
+            <h3 id="autenticacion">AUTENTICACION</h3>
+            <p>
+                Para esto usamos un sistema basico de autenticacion, consistiendo en email y contraseña, y al ser
+                correcta la combinación, se le devuelve un token firmado por el servidor (JWT) al usuario para que lo
+                use en todas sus requests. Este token incluía la ID del usuario, el email, su rol y el hash del Refresh
+                Token que lo generó.
+                Pero, ¿que es un refresh token?
+            </p>
+            <p>
+                Una autenticacion basada en 2 tokens es una de las mas seguras que hay, ya que el Refresh Token es un
+                token que se genera al momento de hacer login y se guarda una referencia al mismo en la base de datos, y
+                este token es el que
+                se usa para generar el Access Token, el cual es el que se usa para hacer las requests. El Access Token
+                tiene un tiempo de vida corto, y cuando este expira, se usa el Refresh Token para generar uno nuevo y
+                asi seguir usando la aplicacion. Esto es muy util para cuando un usuario se olvida de cerrar sesion en
+                un dispositivo, ya que si bien el Access Token expira, el Refresh Token no, y si el usuario se loguea
+                en otro dispositivo, otro Refresh Token se va a generar entonces el mismo usuario puede decidir
+                invalidar el anterior o no. Lo que esto hace es eliminar el Refresh Token de la lista de Tokens validos
+                para esa cuenta, entonces si se llegase a usar, aunque criptograficamente sea valido (ya que no expiró
+                por fecha) si expiró por ID unica. A su vez, esta ID unica al ser marcada como invalida tambien
+                inutiliza todos los access tokens que fueron creados con este, por mayor seguridad.
+            </p>
+            <br>
+            <h3 id="roles-y-jerarquias">ROLES Y JERARQUIAS</h3>
+            <p>
+                Otro de los planes que teniamos era que el sistema sea escalable, y que se pueda usar en cualquier tipo
+                de empresa. Es por eso que teníamos los limites de cada compañía bien marcados, asi tambien como que
+                podía hacer cada rol. Un gestor de Empresa A no podía acceder a los vehiculos de Empresa B, y viceversa.
+                Es mas, una Empresa no se tenía que enterar de la existencia de nadie, para ellos, ellos mismos eran los
+                unicos habitantes del sistema, ya que no habia interaccion entre usuarios externos. <br>
+                Por el lado interno, teníamos que buscar la forma de poder delimitar a que endpoints le podía pegar un
+                usuario de tipo Conductor, para que este no pueda acceder a los datos de los vehiculos que no sean
+                suyos.
+                Es por eso que cada usuario tenia un atributo con su rol, el cual solo podía ser cambiado por su rol
+                superior inmediato, es decir, un gestor podía hacer que un conductor sea movido a gestor, pero solo de
+                esa
+                misma empresa. <br>
+                Tambien existía un rol de tipo 'Admin', que este era controlado por nosotros. Este tenia el poder de
+                crear empresas, asi tambien como de crear el primer usuario de cada empresa. Una vez creado este primer
+                usuario, este se encargaba de invitar enviando emails a los otros supervisores/conductores de la
+                empresa. <br>
+                Todos estos mails eran enviados por nuestro servicio de mensajería que usaba Twilio Sendgrid con mails
+                diseñados en Mailchimp.
+            </p>
+            <img src="https://i.ezegatica.com/20230906-0246l.png" alt="Mail de invitacion a unirse a la compania">
+            <br>
+            <h3 id="sockets">EVENTOS EN TIEMPO REAL</h3>
+            <p>
+                Usando sockets, habiamos pensado en un sistema que generaba una sala por cada compañía, la cual cada
+                miembro de la misma se unia al iniciar sesion. Esto lo marcaba como 'conectado' y permitía que escuche
+                mensajes de la misma. Habian ciertos eventos que realizaban los conductores, como por ejemplo, iniciar
+                una ruta, bajarse de un vehiculo o cruzar ciertos valores que activaban mensajes. El gestor era
+                notificado y este podía leer el detalle, asi tambien como ver el historial de eventos de cada vehiculo.
+                <br>
+                Habian 2 tipos de eventos del lado del servidor, los que se ejecutaban por tiempo y por accion del
+                vehiculo. Los que se ejecutaban por tiempo eran por ejemplo los de la VTV o vencimientos del
+                seguro/gastos del vehiculo. Estos eran avisados por mail mediante una CRON job al gestor de la empresa.
+                El otro tipo eran los que se ejecutaban luego de cierta cantidad de kilometros recorridos con el
+                vehiculo, como por ejemplo cambios de aceite o neumaticos. Estos eran avisados por mail al conductor y
+                al gestor del vehiculo, ademas, si era urgente, se mostraba en pantalla para el conductor.
+            </p>
+            <hr>
+            <p>
+                En resumen, este proyecto fue una gran experiencia para mi, ya que me permitió aprender muchisimo sobre
+                nuevas herramientas, asi tambien terminando un proyecto full stack de mi parte de principio a fin, ya
+                que participe en todas las caras del mismo (hasta en UX/UI).
+            </p>
+            <img src="https://i.ezegatica.com/20230906-0251m.jpeg" alt="Tracking Trucks: Final">
+        </article>
+    </main>
+    <script src="/proyectos/open-img-on-click.js"></script>
+    <script src="/aviso.js"></script>
+</body>
+
+</html>
