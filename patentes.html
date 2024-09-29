@@ -10,41 +10,92 @@
 <body>
     <h1>Traductor de patentes diplomaticas</h1>
     <h3>Para cuando andás por la calle y no sabes de que país o institución es ese auto con patente rara.</h3>
-    
+
     <form id="form-patente">
         <label for="patente">Ingrese la patente a traducir:</label>
         <input type="text" id="patente" name="patente">
         <button type="submit">Traducir</button>
+        <button type="reset">Reset</button> <br/>
+        <small>O solo el codigo de país, EJ A000XXA donde XX es el codigo</small>
     </form>
     <b>
-        <p id="codigo"></p>
-        <p id="categoria"></p>
+        <p>
+            <span id="categoria-traduccion"></span>
+            <span id="categoria"></span>
+        </p>
+        <p>
+            <span id="codigo"></span>
+            <span id="traduccion"></span>
+        </p>
+        <p>
+            <span id="uso-jefe"></span>
+        </p>
+        <p style="color: red" id="error"></p>
     </b>
-    <p id="traduccion"></p>
-    <small>Basado en: <a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto" target="_blank">texto original de resolución</a></small>
+    <small>Basado en: <a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto"
+            target="_blank">texto original de resolución</a></small>
     <script src="assets/scripts/patentes.js"></script>
     <script lang="javascript">
+        // Obtener elementos del DOM
         const form = document.getElementById('form-patente');
         const patenteInput = document.getElementById('patente');
         const codigoInput = document.getElementById('codigo');
         const categoriaInput = document.getElementById('categoria');
+        const categoriaTraduccionInput = document.getElementById('categoria-traduccion');
+        const usoJefeInput = document.getElementById('uso-jefe');
         const traduccionInput = document.getElementById('traduccion');
+        const errorInput = document.getElementById('error');
 
+        // Handlear submit del formulario
         form.addEventListener('submit', (event) => {
             event.preventDefault();
-            const {codigo, categoria, error} = sanitizeInput(patenteInput.value);
+            const { codigo, categoria, categoriaTraduccion, error, usoJefe } = sanitizeInput(patenteInput.value);
 
             if (error) {
-                traduccionInput.innerHTML = 'La patente ingresada no es válida';
+                errorInput.innerHTML = error;
+                clearResults();
                 return;
             }
+            clearError();
+            
             const pais = obtenerPais(codigo);
 
             traduccionInput.innerHTML = pais;
 
-            codigoInput.innerHTML = codigo;
+            codigoInput.innerHTML = `${codigo}: `;
 
-            categoriaInput.innerHTML = categoria;
+            if (categoria) {
+                categoriaTraduccionInput.innerHTML = `${categoriaTraduccion}:`;
+                categoriaInput.innerHTML = categoria;
+            } else {
+                categoriaTraduccionInput.innerHTML = '';
+                categoriaInput.innerHTML = '';
+            }
+
+            if (usoJefe) {
+                usoJefeInput.innerHTML = 'A: Uso exclusivo de jefes de misiones diplomaticas';
+            } else {
+                usoJefeInput.innerHTML = '';
+            }
+
+
+            errorInput.innerHTML = '';
+        });
+
+        // Handlear reset del formulario
+        form.addEventListener('reset', (event) => {
+            clearResults();
+            clearSearchParams();
+        });
+
+        // Precargar patente si viene en la URL solo al cargar el dom
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const patente = urlParams.get('patente');
+            if (patente) {
+                patenteInput.value = patente;
+                form.dispatchEvent(new Event('submit'));
+            }
         });
     </script>
 </body>
