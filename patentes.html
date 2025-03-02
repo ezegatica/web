@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traductor de Patentes Diplomaticas</title>
     <style>
+        :root {
+            --dev-background-color: #ffcccc;
+            --dev-border-color: #ff9999;
+            --dev-text-color: #990000;
+        }
+        
         #map-dialog {
             width: 80%;
             max-width: 800px;
@@ -49,11 +55,51 @@
             max-width: 600px;
             padding: 20px;
         }
+        
+        .dev-button {
+            background-color: var(--dev-background-color);
+            border: 1px solid var(--dev-border-color);
+            color: var(--dev-text-color);
+        }
+        
+        .dev-mode .dev-button {
+            display: inline-block;
+        }
+        
+        #patente-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        #patente-form label {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        #dev-mode-toggle {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px;
+            background-color: var(--dev-background-color);
+            border: 1px solid var(--dev-border-color);
+            color: var(--dev-text-color);
+            cursor: pointer;
+            font-size: 0.8em;
+            opacity: 0.7;
+            display: none; /* Hidden by default */
+        }
+        
+        .dev-mode #dev-mode-toggle {
+            display: block; /* Only show in dev mode */
+        }
     </style>
 </head>
 
 <body>
-    <h1>Traductor de patentes diplomaticas</h1>
+    <h1 id="page-title">Traductor de patentes diplomaticas</h1>
     <h3>Para cuando andás por la calle y no sabes de que país o institución es ese auto con patente rara.</h3>
 
     <form id="form-patente">
@@ -109,6 +155,32 @@
             <button id="close-import">Cancelar</button>
         </div>
     </dialog>
+    
+    <!-- Dialog for creating/editing patentes -->
+    <dialog id="patente-form-dialog">
+        <h2 id="patente-form-title">Crear/Editar Patente</h2>
+        <form id="patente-form">
+            <label>
+                Patente:
+                <input type="text" id="form-patente-id" required>
+            </label>
+            <label>
+                Latitud:
+                <input type="number" id="form-lat" step="0.000001" required>
+            </label>
+            <label>
+                Longitud:
+                <input type="number" id="form-lon" step="0.000001" required>
+            </label>
+            <div class="dialog-buttons">
+                <button type="submit">Guardar</button>
+                <button type="button" id="cancel-patente-form">Cancelar</button>
+            </div>
+        </form>
+    </dialog>
+    
+    <!-- Hidden dev mode toggle button (will be visible only in CSS) -->
+    <button id="dev-mode-toggle" title="Dev Mode">🔧</button>
 
     <script src="assets/scripts/patentes.js"></script>
     <script lang="javascript">
@@ -177,6 +249,9 @@
 
         // Precargar patente si viene en la URL solo al cargar el dom
         document.addEventListener('DOMContentLoaded', function () {
+            // Check for dev mode in URL
+            checkDevModeInUrl();
+            
             const urlParams = new URLSearchParams(window.location.search);
             const patente = urlParams.get('patente');
             if (patente) {
@@ -210,6 +285,25 @@
         });
         
         document.getElementById('confirm-import').addEventListener('click', importarPatentes);
+        
+        // Dev mode toggle
+        let devModeClicks = 0;
+        document.getElementById('page-title').addEventListener('click', () => {
+            devModeClicks++;
+            if (devModeClicks >= 5) {
+                toggleDevMode();
+                devModeClicks = 0;
+            }
+        });
+        
+        // Visible dev mode toggle for easier testing
+        document.getElementById('dev-mode-toggle').addEventListener('click', toggleDevMode);
+        
+        // Patente form handlers
+        document.getElementById('patente-form').addEventListener('submit', guardarPatente);
+        document.getElementById('cancel-patente-form').addEventListener('click', () => {
+            document.getElementById('patente-form-dialog').close();
+        });
     </script>
 </body>
 

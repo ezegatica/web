@@ -1,3 +1,5 @@
+let devMode = false;
+
 const patente = {
     "AA": "SANTA SEDE",
     "AC": "REPÚBLICA FEDERAL DE ALEMANIA",
@@ -260,20 +262,37 @@ function actualizarLista() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const list = document.getElementById('patentes-capturadas');
     
-    // Header with export/import buttons
-    if (patentes.length === 0) {
-        list.innerHTML = "<br><hr><h2>Patentes capturadas <button id='importar-btn'>Importar</button></h2><h3>Lista vacía</h3>";
-    } else {
-        list.innerHTML = "<br><hr><h2>Patentes capturadas <button id='exportar-btn'>Exportar</button> <button id='importar-btn'>Importar</button></h2>";
+    // Header with export/import buttons and dev buttons
+    let buttonsHtml = `<button id='importar-btn'>Importar</button>`;
+    
+    if (patentes.length > 0) {
+        buttonsHtml = `<button id='exportar-btn'>Exportar</button> ${buttonsHtml}`;
     }
     
-    // Add event listeners for import/export buttons
+    if (devMode) {
+        buttonsHtml += ` <button id='crear-btn' class="dev-button">Crear</button>`;
+        if (patentes.length > 0) {
+            buttonsHtml += ` <button id='eliminar-todo-btn' class="dev-button">Eliminar todo</button>`;
+        }
+    }
+    
+    if (patentes.length === 0) {
+        list.innerHTML = `<br><hr><h2>Patentes capturadas ${buttonsHtml}</h2><h3>Lista vacía</h3>`;
+    } else {
+        list.innerHTML = `<br><hr><h2>Patentes capturadas ${buttonsHtml}</h2>`;
+    }
+    
+    // Add event listeners for buttons
     setTimeout(() => {
         const exportarBtn = document.getElementById('exportar-btn');
         const importarBtn = document.getElementById('importar-btn');
+        const crearBtn = document.getElementById('crear-btn');
+        const eliminarTodoBtn = document.getElementById('eliminar-todo-btn');
         
         if (exportarBtn) exportarBtn.addEventListener('click', exportarPatentes);
         if (importarBtn) importarBtn.addEventListener('click', mostrarImportarDialog);
+        if (crearBtn) crearBtn.addEventListener('click', mostrarCrearPatenteDialog);
+        if (eliminarTodoBtn) eliminarTodoBtn.addEventListener('click', confirmarEliminarTodo);
     }, 0);
     
     if (patentes.length === 0) {
@@ -293,11 +312,19 @@ function actualizarLista() {
         
         const li = document.createElement('li');
         li.classList.add('patente-item');
-        li.innerHTML = `${item.patente} - ${formattedDate} - 
+        
+        let buttonsHtml = `
             <button id="ver-detalle" data-patente="${item.patente}">Ver detalle</button>
             <button id="ver-mapa" data-lat="${item.lat}" data-lon="${item.lon}" data-patente="${item.patente}">Ver en mapa</button>
             <button id="eliminar" data-patente="${item.patente}">Eliminar</button>
-            `;
+        `;
+        
+        // Add edit button if in dev mode
+        if (devMode) {
+            buttonsHtml += `<button id="editar" data-patente="${item.patente}" data-lat="${item.lat}" data-lon="${item.lon}" class="dev-button">Editar</button>`;
+        }
+        
+        li.innerHTML = `${item.patente} - ${formattedDate} - ${buttonsHtml}`;
         list.appendChild(li);
     });
     list.addEventListener('click', handleListClick);
@@ -376,6 +403,11 @@ function handleListClick(event) {
         const newPatentes = patentes.filter((item) => item.patente !== patente);
         localStorage.setItem('patentes', JSON.stringify(newPatentes));
         actualizarLista();
+    } else if (event.target.id === 'editar') {
+        const patente = event.target.dataset.patente;
+        const lat = parseFloat(event.target.dataset.lat);
+        const lon = parseFloat(event.target.dataset.lon);
+        mostrarEditarPatenteDialog(patente, lat, lon);
     }
 }
 
@@ -397,4 +429,136 @@ function showMap(lat, lon, patente) {
     
     // Mostrar el diálogo
     dialog.showModal();
+}
+
+// Add this function to check for dev mode in URL
+function checkDevModeInUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('dev')) {
+        devMode = true;
+        document.body.classList.add('dev-mode');
+    }
+}
+
+function toggleDevMode() {
+    if (devMode) {
+        // Turning off dev mode
+        devMode = false;
+        document.body.classList.remove('dev-mode');
+        
+        // Remove dev parameter from URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('dev');
+        window.history.replaceState({}, '', url);
+        
+        alert('Modo desarrollador desactivado');
+    } else {
+        // This should not be directly accessible via button
+        // but keeping it for completeness
+        devMode = true;
+        document.body.classList.add('dev-mode');
+        
+        // Add dev parameter to URL
+        const url = new URL(window.location.href);
+        url.searchParams.set('dev', '');
+        window.history.replaceState({}, '', url);
+        
+        alert('Modo desarrollador activado');
+    }
+    
+    actualizarLista();
+}
+
+function mostrarCrearPatenteDialog() {
+    const dialog = document.getElementById('patente-form-dialog');
+    const form = document.getElementById('patente-form');
+    const title = document.getElementById('patente-form-title');
+    
+    // Clear form fields
+    document.getElementById('form-patente-id').value = '';
+    document.getElementById('form-lat').value = '';
+    document.getElementById('form-lon').value = '';
+    
+    // Set form title and action
+    title.textContent = 'Crear Nueva Patente';
+    form.dataset.action = 'crear';
+    
+    dialog.showModal();
+}
+
+function mostrarEditarPatenteDialog(patente, lat, lon) {
+    const dialog = document.getElementById('patente-form-dialog');
+    const form = document.getElementById('patente-form');
+    const title = document.getElementById('patente-form-title');
+    
+    // Fill form fields with existing data
+    document.getElementById('form-patente-id').value = patente;
+    document.getElementById('form-lat').value = lat;
+    document.getElementById('form-lon').value = lon;
+    
+    // Set form title and action
+    title.textContent = 'Editar Patente';
+    form.dataset.action = 'editar';
+    form.dataset.originalPatente = patente;
+    
+    dialog.showModal();
+}
+
+function guardarPatente(event) {
+    event.preventDefault();
+    
+    const form = document.getElementById('patente-form');
+    const patenteValue = document.getElementById('form-patente-id').value.trim();
+    const lat = parseFloat(document.getElementById('form-lat').value);
+    const lon = parseFloat(document.getElementById('form-lon').value);
+    
+    if (!patenteValue || isNaN(lat) || isNaN(lon)) {
+        alert('Todos los campos son obligatorios');
+        return;
+    }
+    
+    const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
+    
+    if (form.dataset.action === 'crear') {
+        // Check if patente already exists
+        if (patentes.some(item => item.patente === patenteValue)) {
+            alert('Esta patente ya existe');
+            return;
+        }
+        
+        // Add new patente
+        patentes.push({
+            patente: patenteValue,
+            lat,
+            lon,
+            date: new Date().toISOString()
+        });
+    } else if (form.dataset.action === 'editar') {
+        const originalPatente = form.dataset.originalPatente;
+        
+        // Update existing patente
+        const index = patentes.findIndex(item => item.patente === originalPatente);
+        if (index !== -1) {
+            const oldPatente = patentes[index];
+            patentes[index] = {
+                patente: patenteValue,
+                lat,
+                lon,
+                date: oldPatente.date // Keep original date
+            };
+        }
+    }
+    
+    localStorage.setItem('patentes', JSON.stringify(patentes));
+    document.getElementById('patente-form-dialog').close();
+    actualizarLista();
+}
+
+// Function to handle the "Eliminar todo" button click
+function confirmarEliminarTodo() {
+    if (confirm('¿Estás seguro que deseas eliminar TODAS las patentes? Esta acción no se puede deshacer.')) {
+        localStorage.removeItem('patentes');
+        actualizarLista();
+        alert('Todas las patentes han sido eliminadas');
+    }
 }
