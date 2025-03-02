@@ -167,7 +167,8 @@ function sanitizeInput(input) {
         return {
             codigo: null,
             categoria,
-            error
+            error,
+            esPatenteCompleta: false
         }
     }
 
@@ -193,7 +194,8 @@ function sanitizeInput(input) {
         categoria,
         categoriaTraduccion,
         error,
-        usoJefe
+        usoJefe,
+        esPatenteCompleta
     }
 }
 
