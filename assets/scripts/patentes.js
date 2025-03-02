@@ -253,9 +253,9 @@ function actualizarLista() {
     }
 
     if (devMode) {
-        buttonsHtml += ` <button id='crear-btn' class="dev-button px-3 py-1 bg-dev border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900 ml-2">Crear</button>`;
+        buttonsHtml += ` <button id='crear-btn' class="dev-button px-3 py-1 rounded hover:opacity-80 ml-2" style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);">Crear</button>`;
         if (patentes.length > 0) {
-            buttonsHtml += ` <button id='eliminar-todo-btn' class="dev-button px-3 py-1 bg-dev border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900 ml-2">Eliminar todo</button>`;
+            buttonsHtml += ` <button id='eliminar-todo-btn' class="dev-button px-3 py-1 rounded hover:opacity-80 ml-2" style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);">Eliminar todo</button>`;
         }
     }
 
@@ -374,6 +374,9 @@ function actualizarLista() {
                 <button type="button" id="ver-detalle" data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-700/30 text-primary-700 dark:text-primary-300 rounded hover:bg-primary-200 dark:hover:bg-primary-700/50 transition-colors">Ver detalle</button>
                 <button type="button" id="ver-mapa" data-locations='${locationData}' data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors">Ver en mapa</button>
                 <button type="button" id="eliminar-grupo" data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors">${patenteInstances.length > 1 ? 'Eliminar todos' : 'Eliminar'}</button>
+                ${devMode && patenteInstances.length === 1 ? 
+                    `<button type="button" id="editar" data-patente="${patenteInstances[0].patente}" data-lat="${patenteInstances[0].lat}" data-lon="${patenteInstances[0].lon}" class="dev-button px-2 py-1 text-xs rounded hover:opacity-80" style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);">Editar</button>` 
+                    : ''}
             </div>
         `;
 
@@ -426,7 +429,11 @@ function actualizarLista() {
                         if (!editarBtn) {
                             editarBtn = document.createElement('button');
                             editarBtn.id = 'editar';
-                            editarBtn.className = 'dev-button px-2 py-1 text-xs bg-yellow-100 dark:bg-yellow-800/30 text-yellow-700 dark:text-yellow-400 rounded hover:bg-yellow-200 dark:hover:bg-yellow-800/50 transition-colors';
+                            editarBtn.className = 'dev-button px-2 py-1 text-xs rounded hover:opacity-80';
+                            editarBtn.style.backgroundColor = 'var(--dev-background-color)';
+                            editarBtn.style.borderColor = 'var(--dev-border-color)';
+                            editarBtn.style.color = 'var(--dev-text-color)';
+                            editarBtn.style.border = '1px solid var(--dev-border-color)';
                             editarBtn.dataset.patente = selectedInstance.patente;
                             editarBtn.dataset.lat = selectedInstance.lat;
                             editarBtn.dataset.lon = selectedInstance.lon;
