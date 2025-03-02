@@ -12,6 +12,14 @@
     <!-- Add Geist Sans Font -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.2.5/400.min.css">
 
+    <!-- Add Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -37,7 +45,7 @@
                         numero: '#2ecc71',
                         pais: '#e74c3c',
                         uso: '#f39c12',
-                        dev: '#ffcccc'
+                        dev: '#fff3c4'  /* Changed from red to yellow */
                     }
                 }
             }
@@ -46,9 +54,9 @@
 
     <style>
         :root {
-            --dev-background-color: #ffcccc;
-            --dev-border-color: #ff9999;
-            --dev-text-color: #990000;
+            --dev-background-color: #fff3c4;  /* Changed from red to yellow */
+            --dev-border-color: #ffd700;      /* Changed to gold */
+            --dev-text-color: #8b6900;        /* Changed to dark yellow/brown */
 
             /* Colors for the patente parts */
             --categoria-color: #3498db;
@@ -62,9 +70,9 @@
             --numero-color: #27ae60;
             --pais-color: #c0392b;
             --uso-color: #d35400;
-            --dev-background-color: #661c1c;
-            --dev-border-color: #992222;
-            --dev-text-color: #ffcccc;
+            --dev-background-color: #665800;   /* Changed to dark yellow */
+            --dev-border-color: #b39700;       /* Changed to darker gold */
+            --dev-text-color: #ffeb99;         /* Changed to light yellow */
         }
 
         /* Custom styles that complement Tailwind */
@@ -111,6 +119,15 @@
 
         .dev-mode #dev-mode-toggle {
             display: block;
+        }
+
+        /* Leaflet Map in Dark Mode */
+        .dark .leaflet-tile {
+            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+        }
+        
+        .dark .leaflet-container {
+            background: #303030;
         }
     </style>
 </head>
@@ -293,13 +310,13 @@
             <div>
                 <label for="form-lat"
                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Latitud:</label>
-                <input type="number" id="form-lat" step="0.000001" required
+                <input type="number" id="form-lat" step="0.00000001" required
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200">
             </div>
             <div>
                 <label for="form-lon"
                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Longitud:</label>
-                <input type="number" id="form-lon" step="0.000001" required
+                <input type="number" id="form-lon" step="0.00000001" required
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200">
             </div>
             <div class="dialog-buttons flex justify-end gap-2 pt-4">
@@ -497,7 +514,6 @@
             const textarea = document.getElementById('export-content');
             textarea.select();
             document.execCommand('copy');
-            alert('Código copiado al portapapeles');
         });
 
         document.getElementById('close-import').addEventListener('click', () => {
