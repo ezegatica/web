@@ -95,6 +95,25 @@
         .dev-mode #dev-mode-toggle {
             display: block; /* Only show in dev mode */
         }
+        
+        #patente-detail-dialog {
+            width: 80%;
+            max-width: 600px;
+        }
+        
+        .detail-row {
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+        }
+        
+        .dialog-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 
@@ -107,35 +126,47 @@
         <input type="text" id="patente" name="patente">
         <button type="submit">Traducir</button>
         <button type="reset">Reset</button>
-        <button style="display: none" id="capturar" type="button">Capturar</button> <br />
-        <!-- hidden button -->
+        <br />
         <small>O solo el codigo de país, EJ A000XXA donde XX es el codigo</small>
     </form>
-    <b>
-        <p>
-            <span id="categoria-traduccion"></span>
-            <span id="categoria"></span>
-        </p>
-        <p>
-            <span id="codigo"></span>
-            <span id="traduccion"></span>
-        </p>
-        <p>
-            <span id="uso-jefe"></span>
-        </p>
-        <p style="color: red" id="error"></p>
-    </b>
+    
+    <p style="color: red" id="error"></p>
+    
     <small>Basado en: <a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto"
             target="_blank">texto original de resolución</a></small>
     
     <div id="patentes-capturadas"></div>
+    
+    <!-- Dialog for displaying details of a translated diplomatic license plate -->
+    <dialog id="patente-detail-dialog">
+        <h2>Detalles de la Patente</h2>
+        <div id="detail-container">
+            <div class="detail-row" id="categoria-container">
+                <span class="detail-label" id="categoria-traduccion-dialog"></span>
+                <span id="categoria-dialog"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label" id="codigo-dialog"></span>
+                <span id="traduccion-dialog"></span>
+            </div>
+            <div class="detail-row">
+                <span id="uso-jefe-dialog"></span>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <button id="capturar" type="button">Capturar Ubicación</button>
+            <button id="close-detail">Cerrar</button>
+        </div>
+    </dialog>
 
+    <!-- Dialog for showing the map with the location where a license plate was captured -->
     <dialog id="map-dialog">
         <h1 id="map-title"></h1>
         <div id="map-container"></div>
         <button id="close-map">Cerrar</button>
     </dialog>
 
+    <!-- Dialog for exporting license plates data as a shareable code -->
     <dialog id="export-dialog" class="export-dialog">
         <h2>Exportar Patentes</h2>
         <p>Copie el siguiente código para importar en otro dispositivo:</p>
@@ -146,6 +177,7 @@
         </div>
     </dialog>
     
+    <!-- Dialog for importing license plates data from a previously exported code -->
     <dialog id="import-dialog" class="import-dialog">
         <h2>Importar Patentes</h2>
         <p>Pegue el código de exportación:</p>
@@ -156,7 +188,7 @@
         </div>
     </dialog>
     
-    <!-- Dialog for creating/editing patentes -->
+    <!-- Dialog for creating or editing license plate entries in developer mode -->
     <dialog id="patente-form-dialog">
         <h2 id="patente-form-title">Crear/Editar Patente</h2>
         <form id="patente-form">
@@ -201,8 +233,6 @@
 
             if (!patenteInput.value) {
                 errorInput.innerHTML = 'Debe ingresar una patente';
-                clearResults();
-                ocultarCapturar();
                 return;
             }
 
@@ -210,35 +240,43 @@
 
             if (error) {
                 errorInput.innerHTML = error;
-                clearResults();
-                ocultarCapturar();
                 return;
             }
             clearError();
 
             const pais = obtenerPais(codigo);
-
-            traduccionInput.innerHTML = pais;
-
-            codigoInput.innerHTML = `${codigo}: `;
+            
+            // Update dialog elements instead of the page
+            document.getElementById('traduccion-dialog').innerHTML = pais;
+            document.getElementById('codigo-dialog').innerHTML = `${codigo}: `;
 
             if (categoria) {
-                categoriaTraduccionInput.innerHTML = `${categoriaTraduccion}:`;
-                categoriaInput.innerHTML = categoria;
+                document.getElementById('categoria-traduccion-dialog').innerHTML = `${categoriaTraduccion}: `;
+                document.getElementById('categoria-dialog').innerHTML = categoria;
+                document.getElementById('categoria-container').style.display = 'block';
             } else {
-                categoriaTraduccionInput.innerHTML = '';
-                categoriaInput.innerHTML = '';
+                document.getElementById('categoria-traduccion-dialog').innerHTML = '';
+                document.getElementById('categoria-dialog').innerHTML = '';
+                document.getElementById('categoria-container').style.display = 'none';
             }
 
             if (usoJefe) {
-                usoJefeInput.innerHTML = 'A: Uso exclusivo de jefes de misiones diplomaticas';
+                document.getElementById('uso-jefe-dialog').innerHTML = '<b>A</b>: Uso exclusivo de jefes de misiones diplomaticas';
             } else {
-                usoJefeInput.innerHTML = '';
+                document.getElementById('uso-jefe-dialog').innerHTML = '';
             }
-
-            mostrarCapturar();
-
-            errorInput.innerHTML = '';
+            
+            // Check if we're viewing a captured plate and hide the capture button if so
+            if (window.viewingCapturedPlate) {
+                document.getElementById('capturar').style.display = 'none';
+                // Reset the flag
+                window.viewingCapturedPlate = false;
+            } else {
+                document.getElementById('capturar').style.display = 'inline';
+            }
+            
+            // Show the dialog
+            document.getElementById('patente-detail-dialog').showModal();
         });
 
         // Handlear reset del formulario
@@ -303,6 +341,11 @@
         document.getElementById('patente-form').addEventListener('submit', guardarPatente);
         document.getElementById('cancel-patente-form').addEventListener('click', () => {
             document.getElementById('patente-form-dialog').close();
+        });
+
+        // Add event listener to close the detail dialog
+        document.getElementById('close-detail').addEventListener('click', () => {
+            document.getElementById('patente-detail-dialog').close();
         });
     </script>
 </body>

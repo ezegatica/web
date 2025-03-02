@@ -197,6 +197,8 @@ function sanitizeInput(input) {
     }
 }
 
+// This function no longer needed for clearing inline elements
+// Consider removing if not used elsewhere
 function clearResults() {
     const ids = ['codigo', 'categoria', 'categoria-traduccion', 'traduccion', 'uso-jefe']
     for (let id of ids) {
@@ -214,10 +216,13 @@ function clearSearchParams() {
     window.history.replaceState({}, '', url);
 }
 
+// No longer needed to show/hide the button since it's in the dialog
+// The button is always visible in the dialog
 function mostrarCapturar() {
     document.getElementById('capturar').style.display = 'inline';
 }
 
+// No longer needed
 function ocultarCapturar() {
     document.getElementById('capturar').style.display = 'none';
 }
@@ -227,7 +232,8 @@ function handleCapturar() {
     navigator.geolocation.getCurrentPosition((position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
-        addPatente(patente, lat, lon)
+        addPatente(patente, lat, lon);
+        document.getElementById('patente-detail-dialog').close(); // Close dialog after capturing
     }, (error) => {
         if (error.code === 1) {
             alert("Por favor, permita el acceso a la ubicación para poder capturar la patente");
@@ -391,6 +397,8 @@ function handleListClick(event) {
     if (event.target.id === 'ver-detalle') {
         const patente = event.target.dataset.patente;
         document.getElementById('patente').value = patente;
+        // Set a flag to indicate we're viewing an already captured plate
+        window.viewingCapturedPlate = true;
         document.getElementById('form-patente').dispatchEvent(new Event('submit'));
     } else if (event.target.id === 'ver-mapa') {
         const lat = parseFloat(event.target.dataset.lat);
