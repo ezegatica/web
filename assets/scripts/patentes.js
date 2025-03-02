@@ -798,37 +798,38 @@ function showMap(locations, patente) {
     });
 
     // Calculate dynamic maxZoom based on the distance between points
-    let dynamicMaxZoom = 14; // Default value
+    let dynamicMaxZoom = 18; // Default value
+    let distance = -1;
 
     if (locations.length > 1) {
         // Calculate the diagonal distance of the bounds in meters
-        const distance = bounds.getSouthWest().distanceTo(bounds.getNorthEast());
+        distance = bounds.getSouthWest().distanceTo(bounds.getNorthEast());
 
         // Adjust zoom based on distance
         if (distance < 500) dynamicMaxZoom = 16;       // <500m: very close
         else if (distance < 1000) dynamicMaxZoom = 15; // <1km
-        else if (distance < 3000) dynamicMaxZoom = 14; // <3km
-        else if (distance < 10000) dynamicMaxZoom = 13; // <10km
-        else if (distance < 50000) dynamicMaxZoom = 11; // <50km
+        else if (distance < 3000) dynamicMaxZoom = 15; // <3km
+        else if (distance < 10000) dynamicMaxZoom = 14; // <10km
+        else if (distance < 50000) dynamicMaxZoom = 12; // <50km
         else if (distance < 200000) dynamicMaxZoom = 8; // <200km
         else if (distance < 1000000) dynamicMaxZoom = 5; // <1000km
-        else dynamicMaxZoom = 3; // Very distant points
+        else if (distance < 5000000) dynamicMaxZoom = 4; // <5000km
+        else if (distance < 10000000) dynamicMaxZoom = 2; // <10000km
+        else dynamicMaxZoom = 1; // Very distant points
     } else {
         // For single location, use higher zoom
         dynamicMaxZoom = 16;
     }
 
+    if (devMode) {
+        console.info({
+            distance,
+            dynamicMaxZoom
+        });
+    }
+
     // Fit the map to the computed bounds with padding
     map.fitBounds(bounds, { padding: [100, 100], maxZoom: dynamicMaxZoom });
-
-
-    // Update external OSM link based on current center and zoom
-    const center = map.getCenter();
-    const zoom = map.getZoom();
-    const mapLink = document.querySelector('.map-link');
-    if (mapLink) {
-        mapLink.innerHTML = `<a href="https://www.openstreetmap.org/?map=${zoom}/${center.lat.toFixed(6)}/${center.lng.toFixed(6)}" target="_blank">Ver en OpenStreetMap</a>`;
-    }
 
     // Ensure proper rendering after dialog opens
     setTimeout(() => {
