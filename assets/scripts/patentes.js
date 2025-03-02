@@ -161,7 +161,7 @@ function sanitizeInput(input) {
     const regexCodigoPais = /[A-Z]{2}/;
     const match = patenteClean.match(regexCodigoPais);
     if (match === null) {
-        error =  "Código de país no encontrado";
+        error = "Código de país no encontrado";
         return {
             codigo: null,
             categoria,
@@ -196,7 +196,7 @@ function sanitizeInput(input) {
 }
 
 function clearResults() {
-    const ids = ['codigo','categoria', 'categoria-traduccion','traduccion', 'uso-jefe']
+    const ids = ['codigo', 'categoria', 'categoria-traduccion', 'traduccion', 'uso-jefe']
     for (let id of ids) {
         document.getElementById(id).innerHTML = "";
     }
@@ -209,5 +209,68 @@ function clearError() {
 function clearSearchParams() {
     const url = new URL(window.location.href);
     url.searchParams.delete('patente');
-    window.history.replaceState({}, '', url); 
+    window.history.replaceState({}, '', url);
+}
+
+function mostrarCapturar() {
+    document.getElementById('capturar').style.display = 'inline';
+}
+
+function ocultarCapturar() {
+    document.getElementById('capturar').style.display = 'none';
+}
+
+function handleCapturar() {
+    const patente = document.getElementById('patente').value;
+    navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        addPatente(patente, lat, lon)
+    }, (error) => {
+        if (error.code === 1) {
+            alert("Por favor, permita el acceso a la ubicación para poder capturar la patente");
+        } else {
+            console.error(error);
+        }
+    });
+}
+
+function addPatente(patente, lat, lon) {
+    const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
+
+    const alreadyInList = patentes.some((item) => item.patente === patente);
+    if (alreadyInList) {
+        return alert("Patente ya capturada en el pasado");
+    }
+
+    patentes.push({
+        patente,
+        lat,
+        lon,
+        date: new Date().toISOString()
+    });
+    localStorage.setItem('patentes', JSON.stringify(patentes));
+    alert("Patente capturada con éxito");
+    ocultarCapturar();
+
+    actualizarLista();
+}
+
+function actualizarLista() {
+    const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
+    const list = document.getElementById('patentes-capturadas');
+    list.innerHTML = "";
+    patentes.forEach((item) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${item.patente} - ${item.date} - <button id="ver-detalle" data-patente="${item.patente}">Ver detalle</button>`;
+        list.appendChild(li);
+    });
+    list.addEventListener('click', handleVerDetalle);
+}
+
+function handleVerDetalle(event) {
+    const patente = event.target.dataset.patente;
+    patenteInput.value = patente;
+    form.dispatchEvent(new Event('submit'));
+    ocultarCapturar()
 }

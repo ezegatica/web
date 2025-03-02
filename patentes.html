@@ -15,7 +15,9 @@
         <label for="patente">Ingrese la patente a traducir:</label>
         <input type="text" id="patente" name="patente">
         <button type="submit">Traducir</button>
-        <button type="reset">Reset</button> <br/>
+        <button type="reset">Reset</button>
+        <button style="display: none" id="capturar" type="button">Capturar</button> <br />
+        <!-- hidden button -->
         <small>O solo el codigo de país, EJ A000XXA donde XX es el codigo</small>
     </form>
     <b>
@@ -34,6 +36,9 @@
     </b>
     <small>Basado en: <a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto"
             target="_blank">texto original de resolución</a></small>
+    
+    <div id="patentes-capturadas"></div>
+
     <script src="assets/scripts/patentes.js"></script>
     <script lang="javascript">
         // Obtener elementos del DOM
@@ -45,19 +50,29 @@
         const usoJefeInput = document.getElementById('uso-jefe');
         const traduccionInput = document.getElementById('traduccion');
         const errorInput = document.getElementById('error');
+        const capturarButton = document.getElementById('capturar');
 
         // Handlear submit del formulario
         form.addEventListener('submit', (event) => {
             event.preventDefault();
+
+            if (!patenteInput.value) {
+                errorInput.innerHTML = 'Debe ingresar una patente';
+                clearResults();
+                ocultarCapturar();
+                return;
+            }
+
             const { codigo, categoria, categoriaTraduccion, error, usoJefe } = sanitizeInput(patenteInput.value);
 
             if (error) {
                 errorInput.innerHTML = error;
                 clearResults();
+                ocultarCapturar();
                 return;
             }
             clearError();
-            
+
             const pais = obtenerPais(codigo);
 
             traduccionInput.innerHTML = pais;
@@ -78,6 +93,7 @@
                 usoJefeInput.innerHTML = '';
             }
 
+            mostrarCapturar();
 
             errorInput.innerHTML = '';
         });
@@ -96,7 +112,11 @@
                 patenteInput.value = patente;
                 form.dispatchEvent(new Event('submit'));
             }
+            actualizarLista();
         });
+
+        capturarButton.addEventListener('click', handleCapturar)
+
     </script>
 </body>
 
