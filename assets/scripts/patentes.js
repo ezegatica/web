@@ -135,98 +135,76 @@ const categoria = {
     "M": "MISION ESPECIAL"
 }
 
-function obtenerPais(codigo) {
-    const pick = patente[codigo];
-    if (pick === undefined) {
-        return "País no encontrado";
-    }
-    return pick;
-}
-
-function obtenerCategoria(codigo) {
-    const pick = categoria[codigo];
-    if (pick === undefined) {
-        return "Categoría no encontrada";
-    }
-    return pick;
-}
-
 function sanitizeInput(input) {
+    // Clean and standardize input
     const patenteClean = input.toUpperCase().trim();
-    let error = null;
-    let categoria = null;
-    let categoriaTraduccion = null;
-    let usoJefe = false;
-    /* 
-        La patente puede ser ya sea XX (teniendo el codigo pais directo) o dentro de un string mas largo, sea D039CPX, siendo CP el codigo de la REPÚBLICA PORTUGUESA.
-    */
-    const regexCodigoPais = /[A-Z]{2}/;
-    const match = patenteClean.match(regexCodigoPais);
-    if (match === null) {
-        error = "Código de país no encontrado";
-        return {
-            codigo: null,
-            categoria,
-            error,
-            esPatenteCompleta: false
+    
+    // Prepare result object with default values
+    const result = {
+        input: patenteClean,
+        codigo: null,
+        pais: null,
+        categoria: null,
+        categoriaTraduccion: null,
+        usoJefe: false,
+        esPatenteCompleta: false,
+        error: null
+    };
+    
+    // Check if input is exactly a 2-letter country code
+    if (patenteClean.length === 2 && /^[A-Z]{2}$/.test(patenteClean)) {
+        result.codigo = patenteClean;
+        result.pais = patente[patenteClean];
+        
+        if (!result.pais) {
+            result.error = "Código de país no encontrado";
         }
+        
+        return result;
     }
-
-
-    // D039CPX -> X000XXX
-    const patenteCompletaRegex = /[A-Z]{1}\d{3}[A-Z]{3}/;
-    const esPatenteCompleta = patenteClean.length > 2 && patenteClean.match(patenteCompletaRegex)
-    if (esPatenteCompleta) {
-        const regexCategoria = /[A-Z]{1}/;
-        const matchCategoria = patenteClean.match(regexCategoria);
-        if (matchCategoria !== null) {
-            categoria = obtenerCategoria(matchCategoria[0]);
-            categoriaTraduccion = matchCategoria[0];
-        } else {
-            error = "Categoría no encontrada";
+    
+    // Check if input is a complete diplomatic plate (format: D000XXA)
+    const patenteCompletaRegex = /^[A-Z]{1}\d{3}[A-Z]{3}$/;
+    if (patenteCompletaRegex.test(patenteClean)) {
+        result.esPatenteCompleta = true;
+        
+        // Extract parts
+        const categoriaChar = patenteClean.charAt(0);
+        const paisStr = patenteClean.substring(4, 6);
+        
+        // Verify category
+        result.categoriaTraduccion = categoriaChar;
+        result.categoria = categoria[categoriaChar];
+        
+        if (!result.categoria) {
+            result.error = "Categoría no encontrada";
+            return result;
         }
-        // La ultima letra determina si es uso de jefe de misión o no.
-        usoJefe = patenteClean[patenteClean.length - 1] === 'A';
+        
+        // Verify country code
+        result.codigo = paisStr;
+        result.pais = patente[paisStr];
+        
+        if (!result.pais) {
+            result.error = "Código de país no encontrado";
+            return result;
+        }
+        
+        // Check if it's for chief of diplomatic mission use
+        result.usoJefe = patenteClean[patenteClean.length - 1] === 'A';
+        
+        return result;
     }
-
-    return {
-        codigo: match[0],
-        categoria,
-        categoriaTraduccion,
-        error,
-        usoJefe,
-        esPatenteCompleta
-    }
-}
-
-// This function no longer needed for clearing inline elements
-// Consider removing if not used elsewhere
-function clearResults() {
-    const ids = ['codigo', 'categoria', 'categoria-traduccion', 'traduccion', 'uso-jefe']
-    for (let id of ids) {
-        document.getElementById(id).innerHTML = "";
-    }
-}
-
-function clearError() {
-    document.getElementById('error').innerHTML = "";
+    
+    // If we got here, format is invalid
+    result.error = "Formato inválido. Debe ser un código de país de 2 letras o una patente completa en formato letra+3números+2letras+letra";
+    return result;
 }
 
 function clearSearchParams() {
     const url = new URL(window.location.href);
     url.searchParams.delete('patente');
     window.history.replaceState({}, '', url);
-}
-
-// No longer needed to show/hide the button since it's in the dialog
-// The button is always visible in the dialog
-function mostrarCapturar() {
-    document.getElementById('capturar').style.display = 'inline';
-}
-
-// No longer needed
-function ocultarCapturar() {
-    document.getElementById('capturar').style.display = 'none';
 }
 
 function handleCapturar() {
@@ -238,9 +216,10 @@ function handleCapturar() {
         document.getElementById('patente-detail-dialog').close(); // Close dialog after capturing
     }, (error) => {
         if (error.code === 1) {
-            alert("Por favor, permita el acceso a la ubicación para poder capturar la patente");
+            showError("Por favor, permita el acceso a la ubicación para poder capturar la patente");
         } else {
             console.error(error);
+            showError("Error al obtener la ubicación");
         }
     });
 }
@@ -250,7 +229,7 @@ function addPatente(patente, lat, lon) {
 
     const alreadyInList = patentes.some((item) => item.patente === patente);
     if (alreadyInList) {
-        return alert("Patente ya capturada en el pasado");
+        return showError("Patente ya capturada en el pasado");
     }
 
     patentes.push({
@@ -261,7 +240,6 @@ function addPatente(patente, lat, lon) {
     });
     localStorage.setItem('patentes', JSON.stringify(patentes));
     alert("Patente capturada con éxito");
-    ocultarCapturar();
 
     actualizarLista();
 }
@@ -364,7 +342,7 @@ function importarPatentes() {
     const base64Content = textarea.value.trim();
     
     if (!base64Content) {
-        alert('Por favor ingrese el código de importación');
+        showError('Por favor ingrese el código de importación');
         return;
     }
     
@@ -390,7 +368,7 @@ function importarPatentes() {
         actualizarLista();
         alert('Patentes importadas con éxito');
     } catch (error) {
-        alert('El código de importación no es válido. Por favor verifique e intente nuevamente.');
+        showError('El código de importación no es válido. Por favor verifique e intente nuevamente.');
         console.error(error);
     }
 }
@@ -523,7 +501,7 @@ function guardarPatente(event) {
     const lon = parseFloat(document.getElementById('form-lon').value);
     
     if (!patenteValue || isNaN(lat) || isNaN(lon)) {
-        alert('Todos los campos son obligatorios');
+        showError('Todos los campos son obligatorios');
         return;
     }
     
@@ -532,7 +510,7 @@ function guardarPatente(event) {
     if (form.dataset.action === 'crear') {
         // Check if patente already exists
         if (patentes.some(item => item.patente === patenteValue)) {
-            alert('Esta patente ya existe');
+            showError('Esta patente ya existe');
             return;
         }
         
@@ -570,5 +548,19 @@ function confirmarEliminarTodo() {
         localStorage.removeItem('patentes');
         actualizarLista();
         alert('Todas las patentes han sido eliminadas');
+    }
+}
+
+// Make showError available globally
+function showError(message) {
+    const errorDialog = document.getElementById('error-dialog');
+    const errorMessage = document.getElementById('error-message');
+    
+    if (errorDialog && errorMessage) {
+        errorMessage.textContent = message;
+        errorDialog.showModal();
+    } else {
+        // Fallback to alert if dialog elements aren't found
+        alert(message);
     }
 }

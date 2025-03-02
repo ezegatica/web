@@ -216,7 +216,14 @@
         <small>O solo el codigo de país, EJ A000XXA donde XX es el codigo</small>
     </form>
 
-    <p style="color: red" id="error"></p>
+    <!-- Dialog for displaying errors -->
+    <dialog id="error-dialog" class="error-dialog">
+        <h2>Error</h2>
+        <p id="error-message"></p>
+        <div class="dialog-buttons">
+            <button id="close-error">Cerrar</button>
+        </div>
+    </dialog>
 
     <small>Basado en: <a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto"
             target="_blank">texto original de resolución</a></small>
@@ -330,40 +337,31 @@
         // Obtener elementos del DOM
         const form = document.getElementById('form-patente');
         const patenteInput = document.getElementById('patente');
-        const codigoInput = document.getElementById('codigo');
-        const categoriaInput = document.getElementById('categoria');
-        const categoriaTraduccionInput = document.getElementById('categoria-traduccion');
-        const usoJefeInput = document.getElementById('uso-jefe');
-        const traduccionInput = document.getElementById('traduccion');
-        const errorInput = document.getElementById('error');
-        const capturarButton = document.getElementById('capturar');
-
+        const capturarButton = document.getElementById('capturar'); // Add back this reference
+        
         // Handlear submit del formulario
         form.addEventListener('submit', (event) => {
             event.preventDefault();
 
             if (!patenteInput.value) {
-                errorInput.innerHTML = 'Debe ingresar una patente';
+                showError('Debe ingresar una patente');
                 return;
             }
 
-            const { codigo, categoria, categoriaTraduccion, error, usoJefe, esPatenteCompleta } = sanitizeInput(patenteInput.value);
+            const result = sanitizeInput(patenteInput.value);
 
-            if (error) {
-                errorInput.innerHTML = error;
+            if (result.error) {
+                showError(result.error);
                 return;
             }
-            clearError();
-
-            const pais = obtenerPais(codigo);
-
+            
             // Update dialog elements instead of the page
-            document.getElementById('traduccion-dialog').innerHTML = pais;
-            document.getElementById('codigo-dialog').innerHTML = `${codigo}: `;
+            document.getElementById('traduccion-dialog').innerHTML = result.pais;
+            document.getElementById('codigo-dialog').innerHTML = `${result.codigo}: `;
 
-            if (categoria) {
-                document.getElementById('categoria-traduccion-dialog').innerHTML = `${categoriaTraduccion}: `;
-                document.getElementById('categoria-dialog').innerHTML = categoria;
+            if (result.categoria) {
+                document.getElementById('categoria-traduccion-dialog').innerHTML = `${result.categoriaTraduccion}: `;
+                document.getElementById('categoria-dialog').innerHTML = result.categoria;
                 document.getElementById('categoria-container').style.display = 'block';
             } else {
                 document.getElementById('categoria-traduccion-dialog').innerHTML = '';
@@ -371,73 +369,73 @@
                 document.getElementById('categoria-container').style.display = 'none';
             }
 
-            if (usoJefe) {
+            if (result.usoJefe) {
                 document.getElementById('uso-jefe-dialog').innerHTML = '<b>A</b>: Uso exclusivo de jefes de misiones diplomaticas';
             } else {
                 document.getElementById('uso-jefe-dialog').innerHTML = '';
             }
-
+            
             // Generate visual decomposition of the patente
-            const inputValue = patenteInput.value.toUpperCase().trim();
+            const inputValue = result.input;
             const visualContainer = document.getElementById('patente-visual');
-
+            
             // Clear previous content
             visualContainer.innerHTML = '';
 
-            if (esPatenteCompleta) {
+            if (result.esPatenteCompleta) {
                 // Complete plate visualization (format: D000XXA)
                 // Split the patente into parts and add colored spans
                 const categoriaChar = inputValue.charAt(0);
                 const numeroStr = inputValue.substring(1, 4);
                 const paisStr = inputValue.substring(4, 6);
                 const usoChar = inputValue.charAt(6);
-
+                
                 // Create span elements for each part
                 const categoriaSpan = document.createElement('span');
                 categoriaSpan.className = 'patente-part part-categoria';
                 categoriaSpan.textContent = categoriaChar;
-                categoriaSpan.title = categoria || 'Categoría';
-
+                categoriaSpan.title = result.categoria || 'Categoría';
+                
                 const numeroSpan = document.createElement('span');
                 numeroSpan.className = 'patente-part part-numero';
                 numeroSpan.textContent = numeroStr;
                 numeroSpan.title = 'Número asignado';
-
+                
                 const paisSpan = document.createElement('span');
                 paisSpan.className = 'patente-part part-pais';
                 paisSpan.textContent = paisStr;
-                paisSpan.title = pais;
-
+                paisSpan.title = result.pais;
+                
                 const usoSpan = document.createElement('span');
                 usoSpan.className = 'patente-part part-uso';
                 usoSpan.textContent = usoChar;
-                usoSpan.title = usoJefe ? 'Uso exclusivo de jefes de misiones diplomaticas' : 'Uso general';
-
+                usoSpan.title = result.usoJefe ? 'Uso exclusivo de jefes de misiones diplomaticas' : 'Uso general';
+                
                 // Add all parts to the container
                 visualContainer.appendChild(categoriaSpan);
                 visualContainer.appendChild(numeroSpan);
                 visualContainer.appendChild(paisSpan);
                 visualContainer.appendChild(usoSpan);
-
+                
                 document.getElementById('decomposition-container').style.display = 'block';
             } else if (inputValue.length === 2) {
                 // Just country code visualization
                 const paisSpan = document.createElement('span');
                 paisSpan.className = 'patente-part part-pais';
-                paisSpan.textContent = codigo;
-                paisSpan.title = pais;
-
+                paisSpan.textContent = result.codigo;
+                paisSpan.title = result.pais;
+                
                 // Add country code to container
                 visualContainer.appendChild(paisSpan);
-
+                
                 document.getElementById('decomposition-container').style.display = 'block';
             } else {
                 // Hide the decomposition if not a recognizable pattern
                 document.getElementById('decomposition-container').style.display = 'none';
             }
-
+            
             // Only show capture button for complete plates
-            if (esPatenteCompleta) {
+            if (result.esPatenteCompleta) {
                 // Only check for already captured plates if it's a complete plate
                 if (window.viewingCapturedPlate) {
                     document.getElementById('capturar').style.display = 'none';
@@ -450,10 +448,23 @@
                 // Never show capture button for incomplete plates
                 document.getElementById('capturar').style.display = 'none';
             }
-
+            
             // Show the dialog
             document.getElementById('patente-detail-dialog').showModal();
         });
+        
+        // Function to show error dialog
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-dialog').showModal();
+        }
+
+        // Need to define clearResults as it's still used in the reset handler
+        function clearResults() {
+            // Clear any visual elements that need to be reset
+            const errorElement = document.getElementById('error');
+            if (errorElement) errorElement.innerHTML = "";
+        }
 
         // Handlear reset del formulario
         form.addEventListener('reset', (event) => {
@@ -499,6 +510,11 @@
         });
 
         document.getElementById('confirm-import').addEventListener('click', importarPatentes);
+
+
+        document.getElementById('close-error').addEventListener('click', () => {
+            document.getElementById('error-dialog').close();
+        });
 
         // Dev mode toggle
         let devModeClicks = 0;
