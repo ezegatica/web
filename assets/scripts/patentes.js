@@ -259,15 +259,41 @@ function addPatente(patente, lat, lon) {
 function actualizarLista() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const list = document.getElementById('patentes-capturadas');
-    list.innerHTML = "<br><hr><h2>Patentes capturadas</h2>";
+    
+    // Header with export/import buttons
     if (patentes.length === 0) {
-        list.innerHTML = "";
-        return
+        list.innerHTML = "<br><hr><h2>Patentes capturadas <button id='importar-btn'>Importar</button></h2><h3>Lista vacía</h3>";
+    } else {
+        list.innerHTML = "<br><hr><h2>Patentes capturadas <button id='exportar-btn'>Exportar</button> <button id='importar-btn'>Importar</button></h2>";
     }
+    
+    // Add event listeners for import/export buttons
+    setTimeout(() => {
+        const exportarBtn = document.getElementById('exportar-btn');
+        const importarBtn = document.getElementById('importar-btn');
+        
+        if (exportarBtn) exportarBtn.addEventListener('click', exportarPatentes);
+        if (importarBtn) importarBtn.addEventListener('click', mostrarImportarDialog);
+    }, 0);
+    
+    if (patentes.length === 0) {
+        return;
+    }
+    
     patentes.forEach((item) => {
+        // Format the date in Argentine Spanish format
+        const formattedDate = new Date(item.date).toLocaleString('es-AR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+        
         const li = document.createElement('li');
         li.classList.add('patente-item');
-        li.innerHTML = `${item.patente} - ${item.date} - 
+        li.innerHTML = `${item.patente} - ${formattedDate} - 
             <button id="ver-detalle" data-patente="${item.patente}">Ver detalle</button>
             <button id="ver-mapa" data-lat="${item.lat}" data-lon="${item.lon}" data-patente="${item.patente}">Ver en mapa</button>
             <button id="eliminar" data-patente="${item.patente}">Eliminar</button>
@@ -275,6 +301,63 @@ function actualizarLista() {
         list.appendChild(li);
     });
     list.addEventListener('click', handleListClick);
+}
+
+function exportarPatentes() {
+    const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
+    const patentesString = JSON.stringify(patentes);
+    const patentesBase64 = btoa(encodeURIComponent(patentesString));
+    
+    // Show dialog with exportable string
+    const dialog = document.getElementById('export-dialog');
+    const textarea = document.getElementById('export-content');
+    
+    textarea.value = patentesBase64;
+    dialog.showModal();
+    
+    // Select the text for easy copying
+    textarea.select();
+}
+
+function mostrarImportarDialog() {
+    const dialog = document.getElementById('import-dialog');
+    dialog.showModal();
+}
+
+function importarPatentes() {
+    const textarea = document.getElementById('import-content');
+    const base64Content = textarea.value.trim();
+    
+    if (!base64Content) {
+        alert('Por favor ingrese el código de importación');
+        return;
+    }
+    
+    try {
+        const patentesString = decodeURIComponent(atob(base64Content));
+        const newPatentes = JSON.parse(patentesString);
+        
+        if (!Array.isArray(newPatentes)) {
+            throw new Error('Formato inválido');
+        }
+        
+        // Check if user already has patentes saved locally
+        const existingPatentes = JSON.parse(localStorage.getItem('patentes')) || [];
+        if (existingPatentes.length > 0) {
+            // Ask for confirmation before overwriting
+            if (!confirm('¡ATENCIÓN! Ya tienes patentes guardadas. Si continúas, todas las patentes existentes serán reemplazadas. ¿Estás seguro de que deseas continuar?')) {
+                return; // User cancelled the import
+            }
+        }
+        
+        localStorage.setItem('patentes', JSON.stringify(newPatentes));
+        document.getElementById('import-dialog').close();
+        actualizarLista();
+        alert('Patentes importadas con éxito');
+    } catch (error) {
+        alert('El código de importación no es válido. Por favor verifique e intente nuevamente.');
+        console.error(error);
+    }
 }
 
 function handleListClick(event) {

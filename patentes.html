@@ -33,6 +33,22 @@
         .patente-item {
             margin-bottom: 5px;
         }
+        #export-content, #import-content {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .dialog-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .export-dialog, .import-dialog {
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+        }
     </style>
 </head>
 
@@ -72,6 +88,26 @@
         <h1 id="map-title"></h1>
         <div id="map-container"></div>
         <button id="close-map">Cerrar</button>
+    </dialog>
+
+    <dialog id="export-dialog" class="export-dialog">
+        <h2>Exportar Patentes</h2>
+        <p>Copie el siguiente código para importar en otro dispositivo:</p>
+        <textarea id="export-content" readonly></textarea>
+        <div class="dialog-buttons">
+            <button id="copy-export">Copiar</button>
+            <button id="close-export">Cerrar</button>
+        </div>
+    </dialog>
+    
+    <dialog id="import-dialog" class="import-dialog">
+        <h2>Importar Patentes</h2>
+        <p>Pegue el código de exportación:</p>
+        <textarea id="import-content"></textarea>
+        <div class="dialog-buttons">
+            <button id="confirm-import">Importar</button>
+            <button id="close-import">Cancelar</button>
+        </div>
     </dialog>
 
     <script src="assets/scripts/patentes.js"></script>
@@ -156,6 +192,24 @@
         document.getElementById('close-map').addEventListener('click', () => {
             document.getElementById('map-dialog').close();
         });
+
+        // Event listeners for export/import dialogs
+        document.getElementById('close-export').addEventListener('click', () => {
+            document.getElementById('export-dialog').close();
+        });
+        
+        document.getElementById('copy-export').addEventListener('click', () => {
+            const textarea = document.getElementById('export-content');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Código copiado al portapapeles');
+        });
+        
+        document.getElementById('close-import').addEventListener('click', () => {
+            document.getElementById('import-dialog').close();
+        });
+        
+        document.getElementById('confirm-import').addEventListener('click', importarPatentes);
     </script>
 </body>
 
