@@ -259,18 +259,59 @@ function addPatente(patente, lat, lon) {
 function actualizarLista() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const list = document.getElementById('patentes-capturadas');
-    list.innerHTML = "";
+    list.innerHTML = "<br><hr><h2>Patentes capturadas</h2>";
+    if (patentes.length === 0) {
+        list.innerHTML = "";
+        return
+    }
     patentes.forEach((item) => {
         const li = document.createElement('li');
-        li.innerHTML = `${item.patente} - ${item.date} - <button id="ver-detalle" data-patente="${item.patente}">Ver detalle</button>`;
+        li.classList.add('patente-item');
+        li.innerHTML = `${item.patente} - ${item.date} - 
+            <button id="ver-detalle" data-patente="${item.patente}">Ver detalle</button>
+            <button id="ver-mapa" data-lat="${item.lat}" data-lon="${item.lon}" data-patente="${item.patente}">Ver en mapa</button>
+            <button id="eliminar" data-patente="${item.patente}">Eliminar</button>
+            `;
         list.appendChild(li);
     });
-    list.addEventListener('click', handleVerDetalle);
+    list.addEventListener('click', handleListClick);
 }
 
-function handleVerDetalle(event) {
-    const patente = event.target.dataset.patente;
-    patenteInput.value = patente;
-    form.dispatchEvent(new Event('submit'));
-    ocultarCapturar()
+function handleListClick(event) {
+    if (event.target.id === 'ver-detalle') {
+        const patente = event.target.dataset.patente;
+        document.getElementById('patente').value = patente;
+        document.getElementById('form-patente').dispatchEvent(new Event('submit'));
+    } else if (event.target.id === 'ver-mapa') {
+        const lat = parseFloat(event.target.dataset.lat);
+        const lon = parseFloat(event.target.dataset.lon);
+        const patente = event.target.dataset.patente;
+        showMap(lat, lon, patente);
+    } else if (event.target.id === 'eliminar') {
+        const patente = event.target.dataset.patente;
+        const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
+        const newPatentes = patentes.filter((item) => item.patente !== patente);
+        localStorage.setItem('patentes', JSON.stringify(newPatentes));
+        actualizarLista();
+    }
+}
+
+function showMap(lat, lon, patente) {
+    const dialog = document.getElementById('map-dialog');
+    const container = document.getElementById('map-container');
+    const title = document.getElementById('map-title');
+    title.innerHTML = patente;
+    
+    // Limpiar mapa anterior si existe
+    container.innerHTML = '';
+    
+    // Crear iframe de mapa usando OpenStreetMap
+    container.innerHTML = `<iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
+        src="https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01},${lat-0.01},${lon+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lon}" 
+        style="border: 1px solid black"></iframe>
+        <br/>
+        <small class="map-link"><a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=15" target="_blank">Ver en OpenStreetMap</a></small>`;
+    
+    // Mostrar el diálogo
+    dialog.showModal();
 }

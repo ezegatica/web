@@ -5,6 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traductor de Patentes Diplomaticas</title>
+    <style>
+        #map-dialog {
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+        }
+        #map-container {
+            height: 400px;
+            margin-bottom: 10px;
+        }
+        dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .map-link {
+            float: right;
+            margin-right: 10px;
+        }
+        #close-map {
+            float: left;
+        }
+        #map-dialog::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .patente-item {
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 
 <body>
@@ -38,6 +67,12 @@
             target="_blank">texto original de resolución</a></small>
     
     <div id="patentes-capturadas"></div>
+
+    <dialog id="map-dialog">
+        <h1 id="map-title"></h1>
+        <div id="map-container"></div>
+        <button id="close-map">Cerrar</button>
+    </dialog>
 
     <script src="assets/scripts/patentes.js"></script>
     <script lang="javascript">
@@ -117,6 +152,10 @@
 
         capturarButton.addEventListener('click', handleCapturar)
 
+        // Cerrar el mapa cuando se hace clic en el botón cerrar
+        document.getElementById('close-map').addEventListener('click', () => {
+            document.getElementById('map-dialog').close();
+        });
     </script>
 </body>
 
