@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traductor de Patentes Diplomaticas</title>
+    <title>Traductor de Patentes Diplomáticas</title>
+
+    <!-- Add Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Add Geist Sans Font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.2.5/400.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Geist Sans"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        categoria: '#3498db',
+                        numero: '#2ecc71',
+                        pais: '#e74c3c',
+                        uso: '#f39c12',
+                        dev: '#ffcccc'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
         :root {
             --dev-background-color: #ffcccc;
@@ -13,140 +52,32 @@
 
             /* Colors for the patente parts */
             --categoria-color: #3498db;
-            /* Blue */
             --numero-color: #2ecc71;
-            /* Green */
             --pais-color: #e74c3c;
-            /* Red */
             --uso-color: #f39c12;
-            /* Orange */
         }
 
-        #map-dialog {
-            width: 80%;
-            max-width: 800px;
-            padding: 20px;
+        .dark {
+            --categoria-color: #2980b9;
+            --numero-color: #27ae60;
+            --pais-color: #c0392b;
+            --uso-color: #d35400;
+            --dev-background-color: #661c1c;
+            --dev-border-color: #992222;
+            --dev-text-color: #ffcccc;
         }
 
-        #map-container {
-            height: 400px;
-            margin-bottom: 10px;
-        }
-
+        /* Custom styles that complement Tailwind */
         dialog::backdrop {
             background-color: rgba(0, 0, 0, 0.5);
         }
 
-        .map-link {
-            float: right;
-            margin-right: 10px;
-        }
-
-        #close-map {
-            float: left;
-        }
-
-        #map-dialog::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        .patente-item {
-            margin-bottom: 5px;
-        }
-
-        #export-content,
-        #import-content {
-            width: 100%;
-            height: 100px;
-            margin-bottom: 10px;
-        }
-
-        .dialog-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .export-dialog,
-        .import-dialog {
-            width: 80%;
-            max-width: 600px;
-            padding: 20px;
-        }
-
-        .dev-button {
-            background-color: var(--dev-background-color);
-            border: 1px solid var(--dev-border-color);
-            color: var(--dev-text-color);
+        .dark dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.7);
         }
 
         .dev-mode .dev-button {
             display: inline-block;
-        }
-
-        #patente-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        #patente-form label {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        #dev-mode-toggle {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 5px;
-            background-color: var(--dev-background-color);
-            border: 1px solid var(--dev-border-color);
-            color: var(--dev-text-color);
-            cursor: pointer;
-            font-size: 0.8em;
-            opacity: 0.7;
-            display: none;
-            /* Hidden by default */
-        }
-
-        .dev-mode #dev-mode-toggle {
-            display: block;
-            /* Only show in dev mode */
-        }
-
-        #patente-detail-dialog {
-            width: 80%;
-            max-width: 600px;
-        }
-
-        .detail-row {
-            margin-bottom: 10px;
-        }
-
-        .detail-label {
-            font-weight: bold;
-        }
-
-        .dialog-footer {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Patente decomposition styles */
-        .patente-decomposition {
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-        }
-
-        .patente-decomposition h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
         }
 
         .patente-part {
@@ -154,183 +85,236 @@
             padding: 5px 10px;
             margin: 2px;
             font-weight: bold;
-            border-radius: 3px;
+            border-radius: 0.375rem;
+            color: white;
         }
 
         .part-categoria {
             background-color: var(--categoria-color);
-            color: white;
         }
 
         .part-numero {
             background-color: var(--numero-color);
-            color: white;
         }
 
         .part-pais {
             background-color: var(--pais-color);
-            color: white;
         }
 
         .part-uso {
             background-color: var(--uso-color);
-            color: white;
         }
 
-        .patente-legend {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        #dev-mode-toggle {
+            display: none;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-right: 15px;
-        }
-
-        .legend-color {
-            width: 15px;
-            height: 15px;
-            margin-right: 5px;
-            border-radius: 3px;
-        }
-
-        .legend-text {
-            font-size: 0.9em;
+        .dev-mode #dev-mode-toggle {
+            display: block;
         }
     </style>
 </head>
 
-<body>
-    <h1 id="page-title">Traductor de patentes diplomaticas</h1>
-    <h3>Para cuando andás por la calle y no sabes de que país o institución es ese auto con patente rara.</h3>
+<body
+    class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-200">
+    <div class="max-w-4xl mx-auto p-4">
+        <div class="flex justify-between items-center mb-6">
+            <header class="text-center flex-1">
+                <h1 id="page-title" class="text-3xl font-bold text-primary-700 dark:text-primary-400 mb-2">Traductor de
+                    Patentes Diplomáticas</h1>
+                <h3 class="text-gray-600 dark:text-gray-400">Para cuando andás por la calle y no sabes de qué país o
+                    institución es ese auto con patente rara</h3>
+            </header>
+            <!-- Dark mode toggle button -->
+            <button id="theme-toggle"
+                class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none">
+                <svg id="dark-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                        fill-rule="evenodd" clip-rule="evenodd"></path>
+                </svg>
+                <svg id="light-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </button>
+        </div>
 
-    <form id="form-patente">
-        <label for="patente">Ingrese la patente a traducir:</label>
-        <input type="text" id="patente" name="patente">
-        <button type="submit">Traducir</button>
-        <button type="reset">Reset</button>
-        <br />
-        <small>O solo el codigo de país, EJ A000XXA donde XX es el codigo</small>
-    </form>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+            <form id="form-patente" class="space-y-4">
+                <div>
+                    <label for="patente" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ingrese
+                        la patente/codigo de país a traducir:</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="patente" name="patente"
+                            class="flex-grow rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200"
+                            placeholder="Ej: D180BGA o BG">
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-700 dark:hover:bg-primary-600">
+                            Traducir
+                        </button>
+                        <button type="reset"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-8">
+            <small>Basado en: <a
+                    href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto"
+                    target="_blank" class="text-primary-600 dark:text-primary-400 hover:underline">texto original de
+                    resolución</a></small>
+        </div>
+
+        <div id="patentes-capturadas" class="mt-8"></div>
+    </div>
 
     <!-- Dialog for displaying errors -->
-    <dialog id="error-dialog" class="error-dialog">
-        <h2>Error</h2>
-        <p id="error-message"></p>
-        <div class="dialog-buttons">
-            <button id="close-error">Cerrar</button>
+    <dialog id="error-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto">
+        <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Error</h2>
+        <p id="error-message" class="text-gray-700 dark:text-gray-300 mb-6"></p>
+        <div class="flex justify-end">
+            <button id="close-error"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">Cerrar</button>
         </div>
     </dialog>
 
-    <small>Basado en: <a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto"
-            target="_blank">texto original de resolución</a></small>
-
-    <div id="patentes-capturadas"></div>
-
     <!-- Dialog for displaying details of a translated diplomatic license plate -->
-    <dialog id="patente-detail-dialog">
-        <h2>Detalles de la Patente</h2>
-        <div id="detail-container">
+    <dialog id="patente-detail-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-xl mx-auto">
+        <h2 class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-6">Detalles de la Patente</h2>
+        <div id="detail-container" class="space-y-6">
             <!-- Add patente decomposition section -->
-            <div class="patente-decomposition" id="decomposition-container">
-                <h3>Descomposición de la patente:</h3>
-                <div id="patente-visual"></div>
+            <div class="patente-decomposition bg-gray-100 dark:bg-gray-700 rounded-lg p-6" id="decomposition-container">
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Descomposición de la patente:
+                </h3>
+                <div id="patente-visual" class="flex flex-wrap gap-2 mb-4 justify-center text-xl"></div>
 
-                <div class="patente-legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: var(--categoria-color);"></div>
-                        <div class="legend-text">Categoría</div>
+                <div class="patente-legend grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <div class="legend-item flex items-center">
+                        <div class="legend-color w-4 h-4 mr-2 rounded"
+                            style="background-color: var(--categoria-color);"></div>
+                        <div class="legend-text text-sm dark:text-gray-300">Categoría</div>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: var(--numero-color);"></div>
-                        <div class="legend-text">Número</div>
+                    <div class="legend-item flex items-center">
+                        <div class="legend-color w-4 h-4 mr-2 rounded" style="background-color: var(--numero-color);">
+                        </div>
+                        <div class="legend-text text-sm dark:text-gray-300">Número</div>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: var(--pais-color);"></div>
-                        <div class="legend-text">Código País</div>
+                    <div class="legend-item flex items-center">
+                        <div class="legend-color w-4 h-4 mr-2 rounded" style="background-color: var(--pais-color);">
+                        </div>
+                        <div class="legend-text text-sm dark:text-gray-300">Código País</div>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: var(--uso-color);"></div>
-                        <div class="legend-text">Uso</div>
+                    <div class="legend-item flex items-center">
+                        <div class="legend-color w-4 h-4 mr-2 rounded" style="background-color: var(--uso-color);">
+                        </div>
+                        <div class="legend-text text-sm dark:text-gray-300">Uso</div>
                     </div>
                 </div>
             </div>
             <div class="detail-row" id="categoria-container">
-                <span class="detail-label" id="categoria-traduccion-dialog"></span>
-                <span id="categoria-dialog"></span>
+                <span class="detail-label font-medium text-gray-600 dark:text-gray-400"
+                    id="categoria-traduccion-dialog"></span>
+                <span id="categoria-dialog" class="font-semibold dark:text-gray-200"></span>
             </div>
             <div class="detail-row">
-                <span class="detail-label" id="codigo-dialog"></span>
-                <span id="traduccion-dialog"></span>
+                <span class="detail-label font-medium text-gray-600 dark:text-gray-400" id="codigo-dialog"></span>
+                <span id="traduccion-dialog" class="font-semibold dark:text-gray-200"></span>
             </div>
             <div class="detail-row">
-                <span id="uso-jefe-dialog"></span>
+                <span id="uso-jefe-dialog" class="text-sm text-gray-700 dark:text-gray-400"></span>
             </div>
-
         </div>
-        <div class="dialog-footer">
-            <button id="capturar" type="button">Capturar Ubicación</button>
-            <button id="close-detail">Cerrar</button>
+        <div class="dialog-footer mt-8 flex justify-between">
+            <button id="capturar" type="button"
+                class="px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500">Capturar
+                Ubicación</button>
+            <button id="close-detail"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">Cerrar</button>
         </div>
     </dialog>
 
     <!-- Dialog for showing the map with the location where a license plate was captured -->
-    <dialog id="map-dialog">
-        <h1 id="map-title"></h1>
-        <div id="map-container"></div>
-        <button id="close-map">Cerrar</button>
+    <dialog id="map-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-3xl">
+        <h1 id="map-title" class="text-xl font-bold text-primary-700 dark:text-primary-400 mb-4"></h1>
+        <div id="map-container" class="h-96 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+        </div>
+        <div class="flex justify-between items-center mt-4">
+            <button id="close-map"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">Cerrar</button>
+            <small class="map-link text-primary-600 dark:text-primary-400 hover:underline"></small>
+        </div>
     </dialog>
 
     <!-- Dialog for exporting license plates data as a shareable code -->
-    <dialog id="export-dialog" class="export-dialog">
-        <h2>Exportar Patentes</h2>
-        <p>Copie el siguiente código para importar en otro dispositivo:</p>
-        <textarea id="export-content" readonly></textarea>
-        <div class="dialog-buttons">
-            <button id="copy-export">Copiar</button>
-            <button id="close-export">Cerrar</button>
+    <dialog id="export-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-xl mx-auto">
+        <h2 class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-4">Exportar Patentes</h2>
+        <p class="mb-4 text-gray-600 dark:text-gray-300">Copie el siguiente código para importar en otro dispositivo:
+        </p>
+        <textarea id="export-content" readonly
+            class="w-full h-32 p-2 border border-gray-300 dark:border-gray-600 rounded-md mb-4 font-mono text-sm dark:bg-gray-700 dark:text-gray-200"></textarea>
+        <div class="dialog-buttons flex justify-end gap-2">
+            <button id="copy-export"
+                class="px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500">Copiar</button>
+            <button id="close-export"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">Cerrar</button>
         </div>
     </dialog>
 
     <!-- Dialog for importing license plates data from a previously exported code -->
-    <dialog id="import-dialog" class="import-dialog">
-        <h2>Importar Patentes</h2>
-        <p>Pegue el código de exportación:</p>
-        <textarea id="import-content"></textarea>
-        <div class="dialog-buttons">
-            <button id="confirm-import">Importar</button>
-            <button id="close-import">Cancelar</button>
+    <dialog id="import-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-xl mx-auto">
+        <h2 class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-4">Importar Patentes</h2>
+        <p class="mb-4 text-gray-600 dark:text-gray-300">Pegue el código de exportación:</p>
+        <textarea id="import-content"
+            class="w-full h-32 p-2 border border-gray-300 dark:border-gray-600 rounded-md mb-4 font-mono text-sm dark:bg-gray-700 dark:text-gray-200"></textarea>
+        <div class="dialog-buttons flex justify-end gap-2">
+            <button id="confirm-import"
+                class="px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500">Importar</button>
+            <button id="close-import"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">Cancelar</button>
         </div>
     </dialog>
 
     <!-- Dialog for creating or editing license plate entries in developer mode -->
-    <dialog id="patente-form-dialog">
-        <h2 id="patente-form-title">Crear/Editar Patente</h2>
-        <form id="patente-form">
-            <label>
-                Patente:
-                <input type="text" id="form-patente-id" required>
-            </label>
-            <label>
-                Latitud:
-                <input type="number" id="form-lat" step="0.000001" required>
-            </label>
-            <label>
-                Longitud:
-                <input type="number" id="form-lon" step="0.000001" required>
-            </label>
-            <div class="dialog-buttons">
-                <button type="submit">Guardar</button>
-                <button type="button" id="cancel-patente-form">Cancelar</button>
+    <dialog id="patente-form-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto">
+        <h2 id="patente-form-title" class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-4">Crear/Editar
+            Patente</h2>
+        <form id="patente-form" class="space-y-4">
+            <div>
+                <label for="form-patente-id"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Patente:</label>
+                <input type="text" id="form-patente-id" required
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200">
+            </div>
+            <div>
+                <label for="form-lat"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Latitud:</label>
+                <input type="number" id="form-lat" step="0.000001" required
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200">
+            </div>
+            <div>
+                <label for="form-lon"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Longitud:</label>
+                <input type="number" id="form-lon" step="0.000001" required
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200">
+            </div>
+            <div class="dialog-buttons flex justify-end gap-2 pt-4">
+                <button type="submit"
+                    class="px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600">Guardar</button>
+                <button type="button" id="cancel-patente-form"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">Cancelar</button>
             </div>
         </form>
     </dialog>
 
-    <!-- Hidden dev mode toggle button (will be visible only in CSS) -->
-    <button id="dev-mode-toggle" title="Dev Mode">🔧</button>
+    <!-- Dev mode toggle button -->
+    <button id="dev-mode-toggle"
+        class="fixed bottom-4 right-4 p-2 bg-dev border border-red-300 text-red-700 rounded-full shadow-lg focus:outline-none hover:bg-red-200"
+        title="Dev Mode">🔧</button>
 
     <script src="assets/scripts/patentes.js"></script>
     <script lang="javascript">
@@ -338,7 +322,7 @@
         const form = document.getElementById('form-patente');
         const patenteInput = document.getElementById('patente');
         const capturarButton = document.getElementById('capturar'); // Add back this reference
-        
+
         // Handlear submit del formulario
         form.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -354,7 +338,7 @@
                 showError(result.error);
                 return;
             }
-            
+
             // Update dialog elements instead of the page
             document.getElementById('traduccion-dialog').innerHTML = result.pais;
             document.getElementById('codigo-dialog').innerHTML = `${result.codigo}: `;
@@ -374,11 +358,11 @@
             } else {
                 document.getElementById('uso-jefe-dialog').innerHTML = '';
             }
-            
+
             // Generate visual decomposition of the patente
             const inputValue = result.input;
             const visualContainer = document.getElementById('patente-visual');
-            
+
             // Clear previous content
             visualContainer.innerHTML = '';
 
@@ -389,34 +373,34 @@
                 const numeroStr = inputValue.substring(1, 4);
                 const paisStr = inputValue.substring(4, 6);
                 const usoChar = inputValue.charAt(6);
-                
+
                 // Create span elements for each part
                 const categoriaSpan = document.createElement('span');
                 categoriaSpan.className = 'patente-part part-categoria';
                 categoriaSpan.textContent = categoriaChar;
                 categoriaSpan.title = result.categoria || 'Categoría';
-                
+
                 const numeroSpan = document.createElement('span');
                 numeroSpan.className = 'patente-part part-numero';
                 numeroSpan.textContent = numeroStr;
                 numeroSpan.title = 'Número asignado';
-                
+
                 const paisSpan = document.createElement('span');
                 paisSpan.className = 'patente-part part-pais';
                 paisSpan.textContent = paisStr;
                 paisSpan.title = result.pais;
-                
+
                 const usoSpan = document.createElement('span');
                 usoSpan.className = 'patente-part part-uso';
                 usoSpan.textContent = usoChar;
                 usoSpan.title = result.usoJefe ? 'Uso exclusivo de jefes de misiones diplomaticas' : 'Uso general';
-                
+
                 // Add all parts to the container
                 visualContainer.appendChild(categoriaSpan);
                 visualContainer.appendChild(numeroSpan);
                 visualContainer.appendChild(paisSpan);
                 visualContainer.appendChild(usoSpan);
-                
+
                 document.getElementById('decomposition-container').style.display = 'block';
             } else if (inputValue.length === 2) {
                 // Just country code visualization
@@ -424,16 +408,16 @@
                 paisSpan.className = 'patente-part part-pais';
                 paisSpan.textContent = result.codigo;
                 paisSpan.title = result.pais;
-                
+
                 // Add country code to container
                 visualContainer.appendChild(paisSpan);
-                
+
                 document.getElementById('decomposition-container').style.display = 'block';
             } else {
                 // Hide the decomposition if not a recognizable pattern
                 document.getElementById('decomposition-container').style.display = 'none';
             }
-            
+
             // Only show capture button for complete plates
             if (result.esPatenteCompleta) {
                 // Only check for already captured plates if it's a complete plate
@@ -448,11 +432,11 @@
                 // Never show capture button for incomplete plates
                 document.getElementById('capturar').style.display = 'none';
             }
-            
+
             // Show the dialog
             document.getElementById('patente-detail-dialog').showModal();
         });
-        
+
         // Function to show error dialog
         function showError(message) {
             document.getElementById('error-message').textContent = message;
@@ -484,6 +468,17 @@
                 form.dispatchEvent(new Event('submit'));
             }
             actualizarLista();
+
+            // Add outside click handling to all static dialogs
+            const dialogs = document.querySelectorAll('dialog');
+            dialogs.forEach(dialog => {
+                dialog.addEventListener('click', (event) => {
+                    if (event.target === dialog) {
+                        dialog.close();
+                        clearSearchParams();
+                    }
+                });
+            });
         });
 
         capturarButton.addEventListener('click', handleCapturar)
@@ -538,6 +533,32 @@
         // Add event listener to close the detail dialog
         document.getElementById('close-detail').addEventListener('click', () => {
             document.getElementById('patente-detail-dialog').close();
+            clearSearchParams(); // Remove patente from URL
+        });
+
+        // Add theme toggle functionality
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        // Check for saved theme preference or system preference
+        if (localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+
+        // Toggle theme when button is clicked
+        themeToggleBtn.addEventListener('click', function () {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            if (isDarkMode) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
         });
     </script>
 </body>

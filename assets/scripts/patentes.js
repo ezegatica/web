@@ -208,6 +208,7 @@ function clearSearchParams() {
 }
 
 function handleCapturar() {
+    clearSearchParams();
     const patente = document.getElementById('patente').value;
     navigator.geolocation.getCurrentPosition((position) => {
         const lat = position.coords.latitude;
@@ -239,7 +240,7 @@ function addPatente(patente, lat, lon) {
         date: new Date().toISOString()
     });
     localStorage.setItem('patentes', JSON.stringify(patentes));
-    alert("Patente capturada con éxito");
+    showInfoDialog("Éxito", "Patente capturada con éxito");
 
     actualizarLista();
 }
@@ -249,23 +250,39 @@ function actualizarLista() {
     const list = document.getElementById('patentes-capturadas');
     
     // Header with export/import buttons and dev buttons
-    let buttonsHtml = `<button id='importar-btn'>Importar</button>`;
+    let buttonsHtml = `<button id='importar-btn' class="px-3 py-1 bg-primary-600 dark:bg-primary-700 text-white rounded hover:bg-primary-700 dark:hover:bg-primary-600 ml-2">Importar</button>`;
     
     if (patentes.length > 0) {
-        buttonsHtml = `<button id='exportar-btn'>Exportar</button> ${buttonsHtml}`;
+        buttonsHtml = `<button id='exportar-btn' class="px-3 py-1 bg-primary-600 dark:bg-primary-700 text-white rounded hover:bg-primary-700 dark:hover:bg-primary-600">Exportar</button> ${buttonsHtml}`;
     }
     
     if (devMode) {
-        buttonsHtml += ` <button id='crear-btn' class="dev-button">Crear</button>`;
+        buttonsHtml += ` <button id='crear-btn' class="dev-button px-3 py-1 bg-dev border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900 ml-2">Crear</button>`;
         if (patentes.length > 0) {
-            buttonsHtml += ` <button id='eliminar-todo-btn' class="dev-button">Eliminar todo</button>`;
+            buttonsHtml += ` <button id='eliminar-todo-btn' class="dev-button px-3 py-1 bg-dev border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900 ml-2">Eliminar todo</button>`;
         }
     }
     
     if (patentes.length === 0) {
-        list.innerHTML = `<br><hr><h2>Patentes capturadas ${buttonsHtml}</h2><h3>Lista vacía</h3>`;
+        list.innerHTML = `
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <div class="flex flex-wrap items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Patentes capturadas</h2>
+                    <div class="flex flex-wrap gap-2 mt-2 sm:mt-0">${buttonsHtml}</div>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 text-center py-8">No hay patentes capturadas</p>
+            </div>
+        `;
     } else {
-        list.innerHTML = `<br><hr><h2>Patentes capturadas ${buttonsHtml}</h2>`;
+        list.innerHTML = `
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <div class="flex flex-wrap items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Patentes capturadas (${patentes.length})</h2>
+                    <div class="flex flex-wrap gap-2 mt-2 sm:mt-0">${buttonsHtml}</div>
+                </div>
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700" id="patentes-lista"></ul>
+            </div>
+        `;
     }
     
     // Add event listeners for buttons
@@ -285,6 +302,8 @@ function actualizarLista() {
         return;
     }
     
+    const listElement = document.getElementById('patentes-lista');
+    
     patentes.forEach((item) => {
         // Format the date in Argentine Spanish format
         const formattedDate = new Date(item.date).toLocaleString('es-AR', {
@@ -297,23 +316,36 @@ function actualizarLista() {
         });
         
         const li = document.createElement('li');
-        li.classList.add('patente-item');
+        li.classList.add('py-4');
         
+        // Fix button styling - make sure the buttons have proper background colors
         let buttonsHtml = `
-            <button id="ver-detalle" data-patente="${item.patente}">Ver detalle</button>
-            <button id="ver-mapa" data-lat="${item.lat}" data-lon="${item.lon}" data-patente="${item.patente}">Ver en mapa</button>
-            <button id="eliminar" data-patente="${item.patente}">Eliminar</button>
+            <div class="flex flex-wrap gap-2 mt-2">
+                <button type="button" id="ver-detalle" data-patente="${item.patente}" class="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-700/30 text-primary-700 dark:text-primary-300 rounded hover:bg-primary-200 dark:hover:bg-primary-700/50 transition-colors">Ver detalle</button>
+                <button type="button" id="ver-mapa" data-lat="${item.lat}" data-lon="${item.lon}" data-patente="${item.patente}" class="px-2 py-1 text-xs bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors">Ver en mapa</button>
+                <button type="button" id="eliminar" data-patente="${item.patente}" class="px-2 py-1 text-xs bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors">Eliminar</button>
+            </div>
         `;
         
         // Add edit button if in dev mode
         if (devMode) {
-            buttonsHtml += `<button id="editar" data-patente="${item.patente}" data-lat="${item.lat}" data-lon="${item.lon}" class="dev-button">Editar</button>`;
+            buttonsHtml = buttonsHtml.replace('</div>', `<button type="button" id="editar" data-patente="${item.patente}" data-lat="${item.lat}" data-lon="${item.lon}" class="dev-button px-2 py-1 text-xs bg-dev dark:bg-red-900/50 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/70 transition-colors">Editar</button></div>`);
         }
         
-        li.innerHTML = `${item.patente} - ${formattedDate} - ${buttonsHtml}`;
-        list.appendChild(li);
+        li.innerHTML = `
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="font-medium text-gray-900 dark:text-gray-100">${item.patente}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">${formattedDate}</p>
+                </div>
+            </div>
+            ${buttonsHtml}
+        `;
+        
+        listElement.appendChild(li);
     });
-    list.addEventListener('click', handleListClick);
+    
+    listElement.addEventListener('click', handleListClick);
 }
 
 function exportarPatentes() {
@@ -357,21 +389,43 @@ function importarPatentes() {
         // Check if user already has patentes saved locally
         const existingPatentes = JSON.parse(localStorage.getItem('patentes')) || [];
         if (existingPatentes.length > 0) {
-            // Ask for confirmation before overwriting
-            if (!confirm('¡ATENCIÓN! Ya tienes patentes guardadas. Si continúas, todas las patentes existentes serán reemplazadas. ¿Estás seguro de que deseas continuar?')) {
-                return; // User cancelled the import
-            }
+            // Use our new confirmation dialog instead of confirm()
+            showConfirmDialog(
+                '¡Atención!',
+                'Ya tienes patentes guardadas. Si continúas, todas las patentes existentes serán reemplazadas. ¿Estás seguro de que deseas continuar?',
+                () => {
+                    performImport(newPatentes);
+                },
+                () => {
+                    // User canceled import
+                    return;
+                }
+            );
+            return;
         }
         
-        localStorage.setItem('patentes', JSON.stringify(newPatentes));
-        document.getElementById('import-dialog').close();
-        actualizarLista();
-        alert('Patentes importadas con éxito');
+        performImport(newPatentes);
+        
     } catch (error) {
         showError('El código de importación no es válido. Por favor verifique e intente nuevamente.');
         console.error(error);
     }
 }
+
+// Helper function to avoid code duplication in importarPatentes
+function performImport(patentes) {
+    localStorage.setItem('patentes', JSON.stringify(patentes));
+    document.getElementById('import-dialog').close();
+    actualizarLista();
+    showInfoDialog("Éxito", "Patentes importadas con éxito");
+}
+
+document.getElementById('copy-export').addEventListener('click', () => {
+    const textarea = document.getElementById('export-content');
+    textarea.select();
+    document.execCommand('copy');
+    showInfoDialog("Copiado", "Código copiado al portapapeles");
+});
 
 function handleListClick(event) {
     if (event.target.id === 'ver-detalle') {
@@ -387,10 +441,20 @@ function handleListClick(event) {
         showMap(lat, lon, patente);
     } else if (event.target.id === 'eliminar') {
         const patente = event.target.dataset.patente;
-        const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
-        const newPatentes = patentes.filter((item) => item.patente !== patente);
-        localStorage.setItem('patentes', JSON.stringify(newPatentes));
-        actualizarLista();
+        // Show confirmation dialog before deleting
+        showConfirmDialog(
+            '¿Eliminar patente?',
+            `¿Estás seguro que deseas eliminar la patente ${patente}?`,
+            () => {
+                const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
+                const newPatentes = patentes.filter((item) => item.patente !== patente);
+                localStorage.setItem('patentes', JSON.stringify(newPatentes));
+                actualizarLista();
+            },
+            () => {
+                // User canceled the deletion - no action needed
+            }
+        );
     } else if (event.target.id === 'editar') {
         const patente = event.target.dataset.patente;
         const lat = parseFloat(event.target.dataset.lat);
@@ -399,23 +463,176 @@ function handleListClick(event) {
     }
 }
 
+// Enhanced showConfirmDialog with onCancel callback
+function showConfirmDialog(title, message, onConfirm, onCancel = null) {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
+    
+    dialog.innerHTML = `
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">${title}</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
+        <div class="flex justify-end gap-2">
+            <button id="confirm-action" class="px-4 py-2 bg-red-600 dark:bg-red-700 text-white rounded-md hover:bg-red-700 dark:hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Confirmar</button>
+            <button id="cancel-action" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">Cancelar</button>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    dialog.showModal();
+
+    dialog.querySelector('#confirm-action').addEventListener('click', () => {
+        onConfirm();
+        dialog.close();
+    });
+
+    dialog.querySelector('#cancel-action').addEventListener('click', () => {
+        if (onCancel) onCancel();
+        dialog.close();
+    });
+
+    // Close on click outside
+    dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) {
+            if (onCancel) onCancel();
+            dialog.close();
+        }
+    });
+
+    // Clean up on close
+    dialog.addEventListener('close', () => {
+        dialog.remove();
+    });
+}
+
+function confirmarEliminarTodo() {
+    showConfirmDialog(
+        'Eliminar todas las patentes',
+        '¿Estás seguro que deseas eliminar TODAS las patentes? Esta acción no se puede deshacer.',
+        () => {
+            localStorage.removeItem('patentes');
+            actualizarLista();
+            showInfoDialog('Operación completada', 'Todas las patentes han sido eliminadas');
+        },
+        () => {
+            // User canceled the operation - no action needed
+        }
+    );
+}
+
+// New function for info dialogs to replace alerts
+function showInfoDialog(title, message) {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
+    
+    dialog.innerHTML = `
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">${title}</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
+        <div class="flex justify-end">
+            <button id="close-info" class="px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500">Aceptar</button>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    dialog.showModal();
+    
+    dialog.querySelector('#close-info').addEventListener('click', () => {
+        dialog.close();
+    });
+
+    // Close on click outside
+    dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) {
+            dialog.close();
+        }
+    });
+
+    // Clean up on close
+    dialog.addEventListener('close', () => {
+        dialog.remove();
+    });
+}
+
+// Update showError to support dark mode and outside click closing
+function showError(message) {
+    const errorDialog = document.getElementById('error-dialog');
+    const errorMessage = document.getElementById('error-message');
+    
+    if (errorDialog && errorMessage) {
+        errorMessage.textContent = message;
+        errorDialog.showModal();
+        
+        // Add close on outside click if not already added
+        if (!errorDialog.dataset.outsideClickHandled) {
+            errorDialog.addEventListener('click', (event) => {
+                if (event.target === errorDialog) {
+                    errorDialog.close();
+                }
+            });
+            errorDialog.dataset.outsideClickHandled = 'true';
+        }
+    } else {
+        // Create a dynamic error dialog if the static one isn't found
+        const dialog = document.createElement('dialog');
+        dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
+        
+        dialog.innerHTML = `
+            <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Error</h2>
+            <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
+            <div class="flex justify-end">
+                <button id="close-error" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">Cerrar</button>
+            </div>
+        `;
+        
+        document.body.appendChild(dialog);
+        dialog.showModal();
+        
+        dialog.querySelector('#close-error').addEventListener('click', () => {
+            dialog.close();
+            dialog.remove();
+        });
+
+        // Close on click outside
+        dialog.addEventListener('click', (event) => {
+            if (event.target === dialog) {
+                dialog.close();
+            }
+        });
+
+        // Clean up on close
+        dialog.addEventListener('close', () => {
+            dialog.remove();
+        });
+    }
+}
+
+// Update showMap function for dark mode
 function showMap(lat, lon, patente) {
     const dialog = document.getElementById('map-dialog');
     const container = document.getElementById('map-container');
     const title = document.getElementById('map-title');
-    title.innerHTML = patente;
+    title.textContent = patente;
     
-    // Limpiar mapa anterior si existe
+    // Clear previous map if any
     container.innerHTML = '';
     
-    // Crear iframe de mapa usando OpenStreetMap
-    container.innerHTML = `<iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
-        src="https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01},${lat-0.01},${lon+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lon}" 
-        style="border: 1px solid black"></iframe>
-        <br/>
-        <small class="map-link"><a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=15" target="_blank">Ver en OpenStreetMap</a></small>`;
+    // Get dark mode state
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    const mapLayer = isDarkMode ? 'hot' : 'mapnik'; // Use a different style for dark mode
     
-    // Mostrar el diálogo
+    // Create iframe map using OpenStreetMap
+    container.innerHTML = `
+        <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
+            src="https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01},${lat-0.01},${lon+0.01},${lat+0.01}&layer=${mapLayer}&marker=${lat},${lon}" 
+            style="border: none; border-radius: 0.375rem;"></iframe>
+    `;
+    
+    // Update link
+    const mapLink = document.querySelector('.map-link');
+    if (mapLink) {
+        mapLink.innerHTML = `<a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=15" target="_blank">Ver en OpenStreetMap</a>`;
+    }
+    
+    // Show dialog
     dialog.showModal();
 }
 
@@ -439,7 +656,7 @@ function toggleDevMode() {
         url.searchParams.delete('dev');
         window.history.replaceState({}, '', url);
         
-        alert('Modo desarrollador desactivado');
+        showInfoDialog("Modo desarrollador", "Modo desarrollador desactivado");
     } else {
         // This should not be directly accessible via button
         // but keeping it for completeness
@@ -451,7 +668,7 @@ function toggleDevMode() {
         url.searchParams.set('dev', '');
         window.history.replaceState({}, '', url);
         
-        alert('Modo desarrollador activado');
+        showInfoDialog("Modo desarrollador", "Modo desarrollador activado");
     }
     
     actualizarLista();
@@ -540,27 +757,4 @@ function guardarPatente(event) {
     localStorage.setItem('patentes', JSON.stringify(patentes));
     document.getElementById('patente-form-dialog').close();
     actualizarLista();
-}
-
-// Function to handle the "Eliminar todo" button click
-function confirmarEliminarTodo() {
-    if (confirm('¿Estás seguro que deseas eliminar TODAS las patentes? Esta acción no se puede deshacer.')) {
-        localStorage.removeItem('patentes');
-        actualizarLista();
-        alert('Todas las patentes han sido eliminadas');
-    }
-}
-
-// Make showError available globally
-function showError(message) {
-    const errorDialog = document.getElementById('error-dialog');
-    const errorMessage = document.getElementById('error-message');
-    
-    if (errorDialog && errorMessage) {
-        errorMessage.textContent = message;
-        errorDialog.showModal();
-    } else {
-        // Fallback to alert if dialog elements aren't found
-        alert(message);
-    }
 }
