@@ -4,9 +4,11 @@
   "description": "Traductor de patentes diplomáticas para identificar el país o institución",
   "scripts": {
     "dev": "tailwindcss -i ./assets/styles/patentes-input.css -o ./assets/styles/patentes-output.css --watch",
-    "build": "tailwindcss -i ./assets/styles/patentes-input.css -o ./assets/styles/patentes-output.css --minify"
+    "build": "tailwindcss -i ./assets/styles/patentes-input.css -o ./assets/styles/patentes-output.css --minify",
+    "test:e2e": "cypress run"
   },
   "devDependencies": {
+    "cypress": "^14.1.0",
     "tailwindcss": "^3.3.3"
   }
 }
