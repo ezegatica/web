@@ -1,0 +1,12 @@
+{
+  "name": "patentes-diplomaticas",
+  "version": "1.0.0",
+  "description": "Traductor de patentes diplomáticas para identificar el país o institución",
+  "scripts": {
+    "dev": "tailwindcss -i ./assets/styles/patentes-input.css -o ./assets/styles/patentes-output.css --watch",
+    "build": "tailwindcss -i ./assets/styles/patentes-input.css -o ./assets/styles/patentes-output.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.3"
+  }
+}

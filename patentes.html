@@ -5,9 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traductor de Patentes Diplomáticas</title>
+    <meta name="description"
+        content="Traductor de patentes diplomáticas para identificar el país o institución de un auto con patente azul">
+    <meta name="author" content="Ezequiel Gatica">
+    <meta name="keywords" content="patente, diplomática, traductor, auto, país, institución, azul">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#3498db">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Add Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Replace CDN with compiled CSS -->
+    <link rel="stylesheet" href="assets/styles/patentes-output.css">
 
     <!-- Add Geist Sans Font -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.2.5/400.min.css">
@@ -18,145 +25,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Geist Sans"', 'system-ui', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        },
-                        categoria: '#3498db',
-                        numero: '#2ecc71',
-                        pais: '#e74c3c',
-                        uso: '#f39c12',
-                        dev: '#fff3c4'  /* Changed from red to yellow */
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Remove the inline Tailwind config since it's now in tailwind.config.js -->
 
-    <style>
-        :root {
-            --dev-background-color: #fff3c4;
-            /* Changed from red to yellow */
-            --dev-border-color: #ffd700;
-            /* Changed to gold */
-            --dev-text-color: #8b6900;
-            /* Changed to dark yellow/brown */
-
-            /* Colors for the patente parts */
-            --categoria-color: #3498db;
-            --numero-color: #2ecc71;
-            --pais-color: #e74c3c;
-            --uso-color: #f39c12;
-        }
-
-        .dark {
-            --categoria-color: #2980b9;
-            --numero-color: #27ae60;
-            --pais-color: #c0392b;
-            --uso-color: #d35400;
-            --dev-background-color: #665800;
-            /* Changed to dark yellow */
-            --dev-border-color: #b39700;
-            /* Changed to darker gold */
-            --dev-text-color: #ffeb99;
-            /* Changed to light yellow */
-        }
-
-        /* Custom styles that complement Tailwind */
-        dialog::backdrop {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .dark dialog::backdrop {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .dev-mode .dev-button {
-            display: inline-block;
-        }
-
-        .patente-part {
-            display: inline-block;
-            padding: 5px 10px;
-            margin: 2px;
-            font-weight: bold;
-            border-radius: 0.375rem;
-            color: white;
-        }
-
-        .part-categoria {
-            background-color: var(--categoria-color);
-        }
-
-        .part-numero {
-            background-color: var(--numero-color);
-        }
-
-        .part-pais {
-            background-color: var(--pais-color);
-        }
-
-        .part-uso {
-            background-color: var(--uso-color);
-        }
-
-        #dev-mode-toggle {
-            display: none;
-        }
-
-        .dev-mode #dev-mode-toggle {
-            display: block;
-        }
-
-        /* Leaflet Map in Dark Mode */
-        .dark .leaflet-tile {
-            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
-        }
-
-        .dark .leaflet-container {
-            background: #303030;
-        }
-
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
-            .patente-part {
-                font-size: 1.1rem;
-                padding: 6px 12px;
-                margin: 3px;
-            }
-
-            input[type="text"],
-            input[type="number"],
-            select,
-            textarea {
-                font-size: 16px !important;
-                /* Prevents iOS zoom on focus */
-            }
-
-            dialog {
-                width: 92vw !important;
-                max-width: 92vw !important;
-                padding: 1rem !important;
-            }
-        }
-    </style>
+    <!-- No need for inline styles as they're now in input.css -->
 </head>
 
 <body
@@ -168,14 +39,14 @@
                 <h1 id="page-title" class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-400 mb-2">
                     Traductor de
                     Patentes Diplomáticas</h1>
-                <h3 class="text-sm sm:text-base text-gray-600 dark:text-gray-400">Para cuando andás por la calle y no
+                <h2 class="text-sm sm:text-base text-gray-600 dark:text-gray-400">Para cuando andás por la calle y no
                     sabes de qué país o
-                    institución es ese auto con patente rara</h3>
+                    institución es ese auto con patente rara</h2>
             </header>
         </div>
 
         <!-- Add the button in absolute position at the top of the body -->
-        <button id="theme-toggle"
+        <button id="theme-toggle" name="Theme toggle" aria-label="Toggle dark mode"
             class="absolute top-4 right-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none shadow-md z-10">
             <svg id="dark-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg">
