@@ -244,8 +244,10 @@ export function sanitizeInput(input) {
  */
 export function updateDetailsDialog(result) {
     // Update text information
-    document.getElementById('traduccion-dialog').innerHTML = result.pais;
-    document.getElementById('codigo-dialog').innerHTML = `${result.codigo}: `;
+    const traduccionEl = document.getElementById('traduccion-dialog');
+    if (traduccionEl) traduccionEl.innerHTML = result.pais;
+    const codigoEl = document.getElementById('codigo-dialog');
+    if (codigoEl) codigoEl.innerHTML = `${result.codigo}: `;
 
     if (result.categoria) {
         document.getElementById('categoria-traduccion-dialog').innerHTML = `${result.categoriaTraduccion}: `;

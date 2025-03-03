@@ -29,3 +29,4 @@ yarn-error.log*
 # tests output
 cypress/screenshots/
 cypress/videos/
+coverage/

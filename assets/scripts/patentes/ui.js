@@ -6,7 +6,7 @@
  * Shows an error dialog with the specified message
  * @param {string} message - Error message to display
  */
-export function showError(message) {
+function showError(message) {
     const errorDialog = document.getElementById('error-dialog');
     const errorMessage = document.getElementById('error-message');
 
@@ -63,7 +63,7 @@ export function showError(message) {
  * @param {string} title - Title of the dialog
  * @param {string} message - Message to display
  */
-export function showInfoDialog(title, message) {
+function showInfoDialog(title, message) {
     const dialog = document.createElement('dialog');
     dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
 
@@ -102,7 +102,7 @@ export function showInfoDialog(title, message) {
  * @param {Function} onConfirm - Callback function to execute on confirmation
  * @param {Function} [onCancel=null] - Callback function to execute on cancellation
  */
-export function showConfirmDialog(title, message, onConfirm, onCancel = null) {
+function showConfirmDialog(title, message, onConfirm, onCancel = null) {
     const dialog = document.createElement('dialog');
     dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
 
@@ -147,7 +147,7 @@ export function showConfirmDialog(title, message, onConfirm, onCancel = null) {
  * @param {Array} locations - Array of location objects with lat, lon and date properties 
  * @param {string} patente - License plate number
  */
-export function showMap(locations, patente) {
+function showMap(locations, patente) {
     const dialog = document.getElementById('map-dialog');
     const container = document.getElementById('map-container');
     const title = document.getElementById('map-title');
@@ -239,7 +239,7 @@ export function showMap(locations, patente) {
 /**
  * Updates the UI to reflect the current theme
  */
-export function setupThemeToggle() {
+function setupThemeToggle() {
     const themeToggleBtn = document.getElementById('theme-toggle');
 
     // Check for saved theme preference
@@ -267,3 +267,5 @@ export function setupThemeToggle() {
         }
     });
 }
+
+export { setupThemeToggle, showError, showInfoDialog, showConfirmDialog, showMap };
