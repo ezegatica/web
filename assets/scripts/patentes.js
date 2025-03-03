@@ -262,9 +262,9 @@ function actualizarLista() {
     if (patentes.length === 0) {
         list.innerHTML = `
             <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <div class="flex flex-wrap items-center justify-between mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
                     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Patentes capturadas</h2>
-                    <div class="flex flex-wrap gap-2 mt-2 sm:mt-0">${buttonsHtml}</div>
+                    <div class="flex flex-wrap gap-2">${buttonsHtml}</div>
                 </div>
                 <p class="text-gray-500 dark:text-gray-400 text-center py-8">No hay patentes capturadas</p>
             </div>
@@ -272,9 +272,9 @@ function actualizarLista() {
     } else {
         list.innerHTML = `
             <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <div class="flex flex-wrap items-center justify-between mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
                     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Patentes capturadas (${patentes.length})</h2>
-                    <div class="flex flex-wrap gap-2 mt-2 sm:mt-0">${buttonsHtml}</div>
+                    <div class="flex flex-wrap gap-2">${buttonsHtml}</div>
                 </div>
                 <ul class="divide-y divide-gray-200 dark:divide-gray-700" id="patentes-lista"></ul>
             </div>
