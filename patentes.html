@@ -162,8 +162,9 @@
 <body
     class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-200">
     <div class="w-full max-w-4xl mx-auto p-3 sm:p-4">
+        <!-- Remove the button from its current location -->
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
-            <header class="text-center flex-1 mb-3 sm:mb-0">
+            <header class="text-center w-full mb-3 sm:mb-0">
                 <h1 id="page-title" class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-400 mb-2">
                     Traductor de
                     Patentes Diplomáticas</h1>
@@ -171,22 +172,22 @@
                     sabes de qué país o
                     institución es ese auto con patente rara</h3>
             </header>
-            <!-- Dark mode toggle button -->
-            <button id="theme-toggle"
-                class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none">
-                <svg id="dark-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                        fill-rule="evenodd" clip-rule="evenodd"></path>
-                </svg>
-                <svg id="light-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                </svg>
-            </button>
         </div>
 
+        <!-- Add the button in absolute position at the top of the body -->
+        <button id="theme-toggle"
+            class="absolute top-4 right-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none shadow-md z-10">
+            <svg id="dark-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                    fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+            <svg id="light-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 mb-8">
             <form id="form-patente" class="space-y-4">
                 <div>
@@ -194,16 +195,12 @@
                         la patente/codigo de país a traducir:</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <input type="text" id="patente" name="patente"
-                            class="flex-grow rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200 text-base h-10 sm:h-auto"
-                            placeholder="Ej: D180BGA o BG">
+                            class="px-2 flex-grow rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white dark:bg-gray-700 dark:text-gray-200 text-base h-10 sm:h-auto"
+                            placeholder="Ej: D001BGA o BG">
                         <div class="flex gap-2 mt-2 sm:mt-0">
                             <button type="submit"
-                                class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-700 dark:hover:bg-primary-600 h-10">
+                                class="flex-[1] sm:flex-none inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-700 dark:hover:bg-primary-600 h-10">
                                 Traducir
-                            </button>
-                            <button type="reset"
-                                class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 h-10">
-                                Limpiar
                             </button>
                         </div>
                     </div>
@@ -212,10 +209,11 @@
         </div>
 
         <div class="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-8">
-            <small>Basado en: <a
+            <small>Basado en el <a
                     href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-59-2019-319658/texto"
                     target="_blank" class="text-primary-600 dark:text-primary-400 hover:underline">texto original de
-                    resolución</a></small>
+                    resolución 59/2019
+                </a>del Ministerio de Relaciones Exteriores y Culto</small>
         </div>
 
         <div id="patentes-capturadas" class="mt-8"></div>
@@ -294,7 +292,7 @@
     </dialog>
 
     <!-- Dialog for showing the map with the location where a license plate was captured -->
-    <dialog id="map-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-3xl mx-auto"> 
+    <dialog id="map-dialog" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-3xl mx-auto">
         <h1 id="map-title" class="text-lg sm:text-xl font-bold text-primary-700 dark:text-primary-400 mb-3 sm:mb-4">
         </h1>
         <div id="map-container"
