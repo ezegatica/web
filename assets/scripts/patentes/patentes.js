@@ -1,141 +1,178 @@
+import { countries } from './data/countries.js';
+import { categories } from './data/categories.js';
+import { showError, showInfoDialog, showConfirmDialog, showMap, setupThemeToggle } from './ui.js';
+
+// State variables
 let devMode = false;
+let devModeClicks = 0;
 
-const patente = {
-    "AA": "SANTA SEDE",
-    "AC": "REPÚBLICA FEDERAL DE ALEMANIA",
-    "AD": "REPÚBLICA DE ANGOLA",
-    "AE": "REINO DE ARABIA SAUDITA",
-    "AF": "REPÚBLICA ARGELINA DEMOCRÁTICA Y POPULAR",
-    "AG": "REPÚBLICA DE ARMENIA",
-    "AH": "MANCOMUNIDAD DE AUSTRALIA",
-    "AI": "REPÚBLICA DE AUSTRIA",
-    "AJ": "REPÚBLICA DE BELARÚS",
-    "AK": "REINO DE BÉLGICA",
-    "AL": "ESTADO PLURINACIONAL DE BOLIVIA",
-    "AM": "REPÚBLICA FEDERATIVA DEL BRASIL",
-    "AN": "REPÚBLICA DE BULGARIA",
-    "AO": "CANADÁ",
-    "AP": "REPÚBLICA CHECA",
-    "AQ": "REPÚBLICA DE CHILE",
-    "AR": "REPÚBLICA POPULAR CHINA",
-    "AS": "REPÚBLICA DE COLOMBIA",
-    "AT": "REPÚBLICA DEMOCRÁTICA DEL CONGO",
-    "AU": "REPÚBLICA DE COREA",
-    "AV": "REPÚBLICA DE COSTA RICA",
-    "AW": "REPÚBLICA DE CROACIA",
-    "AX": "REPÚBLICA DE CUBA",
-    "AY": "REINO DE DINAMARCA",
-    "AZ": "REPÚBLICA DOMINICANA",
-    "BA": "REPÚBLICA DEL ECUADOR",
-    "BB": "REPÚBLICA ÁRABE DE EGIPTO",
-    "BC": "REPÚBLICA DE EL SALVADOR",
-    "BD": "EMIRATOS ÁRABES UNIDOS",
-    "BE": "REPÚBLICA ESLOVACA",
-    "BF": "REPÚBLICA DE ESLOVENIA",
-    "BG": "REINO DE ESPAÑA",
-    "BH": "ESTADOS UNIDOS DE AMÉRICA",
-    "BI": "REPÚBLICA DE FILIPINAS",
-    "BJ": "REPÚBLICA DE FINLANDIA",
-    "BK": "REPÚBLICA FRANCESA",
-    "BL": "REPÚBLICA HELÉNICA",
-    "BM": "REPÚBLICA DE GUATEMALA",
-    "BN": "REPÚBLICA DE HAITÍ",
-    "BO": "REPÚBLICA DE HONDURAS",
-    "BP": "HUNGRÍA",
-    "BQ": "REPÚBLICA DE LA INDIA",
-    "BR": "REPÚBLICA DE INDONESIA",
-    "BS": "REPÚBLICA ISLÁMICA DE IRÁN",
-    "BT": "IRLANDA",
-    "BU": "ESTADO DE ISRAEL",
-    "BV": "REPÚBLICA ITALIANA",
-    "BW": "JAPÓN",
-    "BX": "ESTADO DE KUWAIT",
-    "BY": "REPÚBLICA LIBANESA",
-    "BZ": "ESTADO DE LIBIA",
-    "CB": "MALASIA",
-    "CC": "SOBERANA ORDEN MILITAR DE MALTA",
-    "CD": "REINO DE MARRUECOS",
-    "CE": "ESTADOS UNIDOS MEXICANOS",
-    "CF": "REPÚBLICA DE NICARAGUA",
-    "CG": "REPÚBLICA FEDERAL DE NIGERIA",
-    "CH": "REINO DE NORUEGA",
-    "CI": "NUEVA ZELANDIA",
-    "CJ": "REINO DE LOS PAÍSES BAJOS",
-    "CK": "REPÚBLICA ISLÁMICA DE PAKISTÁN",
-    "CL": "REPÚBLICA DE PANAMÁ",
-    "CM": "REPÚBLICA DEL PARAGUAY",
-    "CN": "REPÚBLICA DEL PERÚ",
-    "CO": "REPÚBLICA DE POLONIA",
-    "CP": "REPÚBLICA PORTUGUESA",
-    "CQ": "REINO UNIDO DE GRAN BRETAÑA E IRLANDA DEL NORTE",
-    "CR": "RUMANIA",
-    "CS": "FEDERACIÓN DE RUSIA",
-    "CU": "REPÚBLICA DE SERBIA",
-    "CV": "REPÚBLICA ÁRABE SIRIA",
-    "CW": "REPÚBLICA DE SUDÁFRICA",
-    "CX": "REINO DE SUECIA",
-    "CY": "CONFEDERACIÓN SUIZA",
-    "CZ": "REINO DE TAILANDIA",
-    "DA": "REPÚBLICA TUNECINA",
-    "DB": "REPÚBLICA DE TURQUÍA",
-    "DC": "UCRANIA",
-    "DD": "REPÚBLICA ORIENTAL DEL URUGUAY",
-    "DE": "REPÚBLICA BOLIVARIANA DE VENEZUELA",
-    "DF": "REPÚBLICA SOCIALISTA DE VIETNAM",
-    "DG": "UNIÓN EUROPEA",
-    "DH": "LIGA DE LOS ESTADOS ÁRABES",
-    "DI": "ESTADO DE PALESTINA",
-    "DJ": "REPÚBLICA DE AZERBAIYÁN",
-    "DK": "GEORGIA",
-    "DL": "ESTADO DE QATAR",
-    "DM": "MONTENEGRO",
-    "RA": "ALTO COMISIONADO DE LAS NACIONES UNIDAS PARA LOS REFUGIADOS",
-    "RB": "BANCO INTERAMERICANO DE DESARROLLO",
-    "RC": "BANCO INTERNACIONAL DE RECONSTRUCCIÓN Y DESARROLLO",
-    "RD": "CENTRO DE INFORMACIÓN DE LAS NACIONES UNIDAS PARA ARGENTINA Y URUGUAY",
-    "RE": "COMISIÓN ADMINISTRADORA DEL RIO DE LA PLATA",
-    "RF": "COMISIÓN ADMINISTRADORA DEL RÍO URUGUAY",
-    "RG": "COMISIÓN MIXTA ARGENTINO PARAGUAYA DEL RÍO PARANÁ",
-    "RH": "COMITÉ INTERNACIONAL DE LA CRUZ ROJA",
-    "RI": "CORPORACIÓN ANDINA DE FOMENTO",
-    "RJ": "CORPORACIÓN FINANCIERA INTERNACIONAL",
-    "RK": "ENTIDAD BINACIONAL YACIRETÁ",
-    "RL": "FONDO DE LAS NACIONES UNIDAS PARA LA INFANCIA",
-    "RM": "FONDO MONETARIO INTERNACIONAL",
-    "RN": "INSTITUTO INTERAMERICANO DE COOPERACIÓN PARA LA AGRICULTURA",
-    "RO": "ORGANIZACIÓN DE ESTADOS IBEROAMERICANOS PARA LA EDUCACIÓN, LA CIENCIA Y LA CULTURA",
-    "RP": "ORGANIZACIÓN DE LAS NACIONES UNIDAS PARA LA AGRICULTURA Y LA ALIMENTACIÓN",
-    "RQ": "ORGANIZACIÓN IBEROAMERICANO DE SEGURIDAD SOCIAL",
-    "RR": "ORGANIZACIÓN INTERNACIONAL DE POLICIA CRIMINAL",
-    "RS": "ORGANIZACIÓN INTERNACIONAL DEL TRABAJO",
-    "RT": "ORGANIZACION INTERNACIONAL PARA LAS MIGRACIONES",
-    "RU": "ORGANIZACIÓN PANAMERICANA DE LA SALUD - OPS/OMS",
-    "RV": "PROGRAMA COMÚN DE LAS NACIONES UNIDAS SOBRE VIH/SIDA",
-    "RW": "SISTEMA DE LAS NACIONES UNIDAS",
-    "RX": "REPRES. SECRET. GRAL. OEA EN ARGENTINA",
-    "RY": "SECRETARÍA DEL TRATADO ANTÁRTICO",
-    "RZ": "FEDERACIÓN INTERNACIONAL DE SOCIEDADES DE LA CRUZ ROJA",
-    "SA": "REPRESENTACIÓN REGIONAL PARA LAS AMÉRICAS DE LA ORGANIZACIÓN MUNDIAL DE SANIDAD ANIMAL",
-    "SB": "OFICINA DE LAS NACIONES UNIDAS PARA LOS PROYECTOS",
-    "SC": "CENTRO DE ESTUDIOS ESTRATÉGICOS DE DEFENSA DEL CONSEJO DE DEFENSA SURAMERICANO DEL UNASUR - CEED",
-    "SD": "COMISIÓN TRINACIONAL PARA EL DESARROLLO DE LA CUENCA DEL RÍO PILCOMAYO",
-    "SE": "COMISIÓN ECONÓMICA PARA AMÉRICA LATINA Y EL CARIBE - CEPAL",
-    "XA": "AGENCIA DE COOPERACIÓN INTERNACIONAL DEL JAPÓN (JICA)",
-    "XB": "FUNDACIÓN KONRAD ADENAUER",
-    "XC": "FUNDACIÓN HANNS SEIDEL",
-    "XD": "FUNDACIÓN FRIEDRICH NAUMANN",
-    "XE": "FUNDACIÓN FRIEDRICH EBERT"
+/**
+ * Initialize the application when DOM is ready
+ */
+export function initApp() {
+    // Setup event listeners
+    setupFormHandlers();
+    setupDialogHandlers();
+    setupDevModeHandlers();
+    setupThemeToggle();
+    
+    // Check for dev mode in URL
+    checkDevModeInUrl();
+    
+    // Process URL parameters (e.g., pre-filled patente)
+    processUrlParams();
+    
+    // Update the list of captured plates
+    actualizarLista();
+
+    // Add outside click handling to all static dialogs
+    setupDialogOutsideClickHandlers();
 }
 
-const categoria = {
-    "D": "CUERPO DIPLOMATICO",
-    "I": "ORGANISMO INTERNACIONAL",
-    "C": "CUERPO CONSULAR",
-    "A": "PERSONAL ADMINISTRATIVO",
-    "M": "MISION ESPECIAL"
+/**
+ * Setup handlers for form submission and reset
+ */
+function setupFormHandlers() {
+    const form = document.getElementById('form-patente');
+    const patenteInput = document.getElementById('patente');
+    const capturarButton = document.getElementById('capturar');
+
+    // Form submission handler
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (!patenteInput.value) {
+            showError('Debe ingresar una patente');
+            return;
+        }
+
+        const result = sanitizeInput(patenteInput.value);
+
+        if (result.error) {
+            showError(result.error);
+            return;
+        }
+
+        updateDetailsDialog(result);
+
+        // Show the dialog
+        document.getElementById('patente-detail-dialog').showModal();
+    });
+
+    // Form reset handler
+    form.addEventListener('reset', (event) => {
+        clearResults();
+        clearSearchParams();
+    });
+
+    // Capture button handler
+    capturarButton.addEventListener('click', handleCapturar);
 }
 
-function sanitizeInput(input) {
+/**
+ * Setup handlers for all dialogs
+ */
+function setupDialogHandlers() {
+    // Map dialog close button
+    document.getElementById('close-map').addEventListener('click', () => {
+        document.getElementById('map-dialog').close();
+    });
+
+    // Export dialog
+    document.getElementById('close-export').addEventListener('click', () => {
+        document.getElementById('export-dialog').close();
+    });
+
+    document.getElementById('copy-export').addEventListener('click', () => {
+        const textarea = document.getElementById('export-content');
+        textarea.select();
+        document.execCommand('copy');
+        showInfoDialog("Copiado", "Código copiado al portapapeles");
+    });
+
+    // Import dialog
+    document.getElementById('close-import').addEventListener('click', () => {
+        document.getElementById('import-dialog').close();
+    });
+
+    document.getElementById('confirm-import').addEventListener('click', importarPatentes);
+
+    // Error dialog
+    document.getElementById('close-error').addEventListener('click', () => {
+        document.getElementById('error-dialog').close();
+    });
+
+    // Patente detail dialog
+    document.getElementById('close-detail').addEventListener('click', () => {
+        document.getElementById('patente-detail-dialog').close();
+        clearSearchParams(); // Remove patente from URL
+    });
+
+    // Patente form dialog
+    document.getElementById('patente-form').addEventListener('submit', guardarPatente);
+    document.getElementById('cancel-patente-form').addEventListener('click', () => {
+        document.getElementById('patente-form-dialog').close();
+    });
+}
+
+/**
+ * Setup handlers for dev mode toggling
+ */
+function setupDevModeHandlers() {
+    // Secret dev mode toggle (5 clicks on title)
+    document.getElementById('page-title').addEventListener('click', () => {
+        devModeClicks++;
+        if (devModeClicks >= 5) {
+            toggleDevMode();
+            devModeClicks = 0;
+        }
+    });
+
+    // Visible dev mode toggle (only shown when in dev mode)
+    document.getElementById('dev-mode-toggle').addEventListener('click', toggleDevMode);
+}
+
+/**
+ * Add outside click handling to all static dialogs
+ */
+function setupDialogOutsideClickHandlers() {
+    const dialogs = document.querySelectorAll('dialog');
+    dialogs.forEach(dialog => {
+        dialog.addEventListener('click', (event) => {
+            if (event.target === dialog) {
+                dialog.close();
+                clearSearchParams();
+            }
+        });
+    });
+}
+
+/**
+ * Check URL for patente parameter and fill input
+ */
+function processUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const patente = urlParams.get('patente');
+    if (patente) {
+        document.getElementById('patente').value = patente;
+        document.getElementById('form-patente').dispatchEvent(new Event('submit'));
+    }
+}
+
+/**
+ * Clear any visual elements that need to be reset
+ */
+export function clearResults() {
+    const errorElement = document.getElementById('error');
+    if (errorElement) errorElement.innerHTML = "";
+}
+
+/**
+ * Clean and analyze user input to identify the type of license plate or code
+ * @param {string} input - User input to sanitize and analyze
+ * @returns {Object} Result object with parsed data
+ */
+export function sanitizeInput(input) {
     // Clean and standardize input
     const patenteClean = input.toUpperCase().trim();
 
@@ -154,7 +191,7 @@ function sanitizeInput(input) {
     // Check if input is exactly a 2-letter country code
     if (patenteClean.length === 2 && /^[A-Z]{2}$/.test(patenteClean)) {
         result.codigo = patenteClean;
-        result.pais = patente[patenteClean];
+        result.pais = countries[patenteClean];
 
         if (!result.pais) {
             result.error = "Código de país no encontrado";
@@ -174,7 +211,7 @@ function sanitizeInput(input) {
 
         // Verify category
         result.categoriaTraduccion = categoriaChar;
-        result.categoria = categoria[categoriaChar];
+        result.categoria = categories[categoriaChar];
 
         if (!result.categoria) {
             result.error = "Categoría no encontrada";
@@ -183,7 +220,7 @@ function sanitizeInput(input) {
 
         // Verify country code
         result.codigo = paisStr;
-        result.pais = patente[paisStr];
+        result.pais = countries[paisStr];
 
         if (!result.pais) {
             result.error = "Código de país no encontrado";
@@ -201,13 +238,126 @@ function sanitizeInput(input) {
     return result;
 }
 
-function clearSearchParams() {
+/**
+ * Update the details dialog with the parsed license plate information
+ * @param {Object} result - The parsed license plate data
+ */
+export function updateDetailsDialog(result) {
+    // Update text information
+    document.getElementById('traduccion-dialog').innerHTML = result.pais;
+    document.getElementById('codigo-dialog').innerHTML = `${result.codigo}: `;
+
+    if (result.categoria) {
+        document.getElementById('categoria-traduccion-dialog').innerHTML = `${result.categoriaTraduccion}: `;
+        document.getElementById('categoria-dialog').innerHTML = result.categoria;
+        document.getElementById('categoria-container').style.display = 'block';
+    } else {
+        document.getElementById('categoria-traduccion-dialog').innerHTML = '';
+        document.getElementById('categoria-dialog').innerHTML = '';
+        document.getElementById('categoria-container').style.display = 'none';
+    }
+
+    if (result.usoJefe) {
+        document.getElementById('uso-jefe-dialog').innerHTML = '<b>A</b>: Uso exclusivo de jefes de misiones diplomaticas';
+    } else {
+        document.getElementById('uso-jefe-dialog').innerHTML = '';
+    }
+
+    // Generate visual decomposition
+    updateVisualDecomposition(result);
+
+    // Only show capture button for complete plates
+    if (result.esPatenteCompleta) {
+        // Only check for already captured plates if it's a complete plate
+        if (window.viewingCapturedPlate) {
+            document.getElementById('capturar').style.display = 'none';
+            // Reset the flag
+            window.viewingCapturedPlate = false;
+        } else {
+            document.getElementById('capturar').style.display = 'inline';
+        }
+    } else {
+        // Never show capture button for incomplete plates
+        document.getElementById('capturar').style.display = 'none';
+    }
+}
+
+/**
+ * Generate and update the visual decomposition of the license plate
+ * @param {Object} result - The parsed license plate data
+ */
+function updateVisualDecomposition(result) {
+    const inputValue = result.input;
+    const visualContainer = document.getElementById('patente-visual');
+    
+    // Clear previous content
+    visualContainer.innerHTML = '';
+
+    if (result.esPatenteCompleta) {
+        // Complete plate visualization (format: D000XXA)
+        const categoriaChar = inputValue.charAt(0);
+        const numeroStr = inputValue.substring(1, 4);
+        const paisStr = inputValue.substring(4, 6);
+        const usoChar = inputValue.charAt(6);
+
+        // Create span elements for each part
+        const categoriaSpan = document.createElement('span');
+        categoriaSpan.className = 'patente-part part-categoria';
+        categoriaSpan.textContent = categoriaChar;
+        categoriaSpan.title = result.categoria || 'Categoría';
+
+        const numeroSpan = document.createElement('span');
+        numeroSpan.className = 'patente-part part-numero';
+        numeroSpan.textContent = numeroStr;
+        numeroSpan.title = 'Número asignado';
+
+        const paisSpan = document.createElement('span');
+        paisSpan.className = 'patente-part part-pais';
+        paisSpan.textContent = paisStr;
+        paisSpan.title = result.pais;
+
+        const usoSpan = document.createElement('span');
+        usoSpan.className = 'patente-part part-uso';
+        usoSpan.textContent = usoChar;
+        usoSpan.title = result.usoJefe ? 'Uso exclusivo de jefes de misiones diplomaticas' : 'Uso general';
+
+        // Add all parts to the container
+        visualContainer.appendChild(categoriaSpan);
+        visualContainer.appendChild(numeroSpan);
+        visualContainer.appendChild(paisSpan);
+        visualContainer.appendChild(usoSpan);
+
+        document.getElementById('decomposition-container').style.display = 'block';
+    } else if (inputValue.length === 2) {
+        // Just country code visualization
+        const paisSpan = document.createElement('span');
+        paisSpan.className = 'patente-part part-pais';
+        paisSpan.textContent = result.codigo;
+        paisSpan.title = result.pais;
+
+        // Add country code to container
+        visualContainer.appendChild(paisSpan);
+
+        document.getElementById('decomposition-container').style.display = 'block';
+    } else {
+        // Hide the decomposition if not a recognizable pattern
+        document.getElementById('decomposition-container').style.display = 'none';
+    }
+}
+
+/**
+ * Remove patente parameter from URL
+ */
+export function clearSearchParams() {
     const url = new URL(window.location.href);
     url.searchParams.delete('patente');
     window.history.replaceState({}, '', url);
 }
 
-function handleCapturar() {
+/**
+ * Handle the capture button click to get user's location
+ */
+export function handleCapturar() {
     clearSearchParams();
     const patente = document.getElementById('patente').value;
     navigator.geolocation.getCurrentPosition((position) => {
@@ -225,10 +375,15 @@ function handleCapturar() {
     });
 }
 
+/**
+ * Add a captured license plate to localStorage
+ * @param {string} patente - License plate number
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ */
 function addPatente(patente, lat, lon) {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
 
-    // Remove the check for duplicates to allow multiple captures of the same plate
     patentes.push({
         patente,
         lat,
@@ -241,6 +396,9 @@ function addPatente(patente, lat, lon) {
     actualizarLista();
 }
 
+/**
+ * Update the UI list of captured plates
+ */
 function actualizarLista() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const list = document.getElementById('patentes-capturadas');
@@ -470,6 +628,9 @@ function actualizarLista() {
     listElement.addEventListener('click', handleListClick);
 }
 
+/**
+ * Export captured plates to a Base64 string
+ */
 function exportarPatentes() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const patentesString = JSON.stringify(patentes);
@@ -486,11 +647,17 @@ function exportarPatentes() {
     textarea.select();
 }
 
+/**
+ * Show the import dialog
+ */
 function mostrarImportarDialog() {
     const dialog = document.getElementById('import-dialog');
     dialog.showModal();
 }
 
+/**
+ * Import patentes from a Base64 string
+ */
 function importarPatentes() {
     const textarea = document.getElementById('import-content');
     const base64Content = textarea.value.trim();
@@ -534,7 +701,10 @@ function importarPatentes() {
     }
 }
 
-// Helper function to avoid code duplication in importarPatentes
+/**
+ * Helper function to avoid code duplication in importarPatentes
+ * @param {Array} patentes - Array of license plate objects to import
+ */
 function performImport(patentes) {
     localStorage.setItem('patentes', JSON.stringify(patentes));
     document.getElementById('import-dialog').close();
@@ -542,13 +712,10 @@ function performImport(patentes) {
     showInfoDialog("Éxito", "Patentes importadas con éxito");
 }
 
-document.getElementById('copy-export').addEventListener('click', () => {
-    const textarea = document.getElementById('export-content');
-    textarea.select();
-    document.execCommand('copy');
-    showInfoDialog("Copiado", "Código copiado al portapapeles");
-});
-
+/**
+ * Handle clicks on captured plates list using event delegation
+ * @param {Event} event - Click event
+ */
 function handleListClick(event) {
     const target = event.target;
 
@@ -605,47 +772,10 @@ function handleListClick(event) {
     }
 }
 
-// Enhanced showConfirmDialog with onCancel callback
-function showConfirmDialog(title, message, onConfirm, onCancel = null) {
-    const dialog = document.createElement('dialog');
-    dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
 
-    dialog.innerHTML = `
-        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">${title}</h2>
-        <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
-        <div class="flex justify-end gap-2">
-            <button id="confirm-action" class="px-4 py-2 bg-red-600 dark:bg-red-700 text-white rounded-md hover:bg-red-700 dark:hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Confirmar</button>
-            <button id="cancel-action" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">Cancelar</button>
-        </div>
-    `;
-
-    document.body.appendChild(dialog);
-    dialog.showModal();
-
-    dialog.querySelector('#confirm-action').addEventListener('click', () => {
-        onConfirm();
-        dialog.close();
-    });
-
-    dialog.querySelector('#cancel-action').addEventListener('click', () => {
-        if (onCancel) onCancel();
-        dialog.close();
-    });
-
-    // Close on click outside
-    dialog.addEventListener('click', (event) => {
-        if (event.target === dialog) {
-            if (onCancel) onCancel();
-            dialog.close();
-        }
-    });
-
-    // Clean up on close
-    dialog.addEventListener('close', () => {
-        dialog.remove();
-    });
-}
-
+/**
+ * Show a confirmation dialog to delete all captured plates
+ */
 function confirmarEliminarTodo() {
     showConfirmDialog(
         'Eliminar todas las patentes',
@@ -661,191 +791,9 @@ function confirmarEliminarTodo() {
     );
 }
 
-// New function for info dialogs to replace alerts
-function showInfoDialog(title, message) {
-    const dialog = document.createElement('dialog');
-    dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
-
-    dialog.innerHTML = `
-        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">${title}</h2>
-        <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
-        <div class="flex justify-end">
-            <button id="close-info" class="px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500">Aceptar</button>
-        </div>
-    `;
-
-    document.body.appendChild(dialog);
-    dialog.showModal();
-
-    dialog.querySelector('#close-info').addEventListener('click', () => {
-        dialog.close();
-    });
-
-    // Close on click outside
-    dialog.addEventListener('click', (event) => {
-        if (event.target === dialog) {
-            dialog.close();
-        }
-    });
-
-    // Clean up on close
-    dialog.addEventListener('close', () => {
-        dialog.remove();
-    });
-}
-
-// Update showError to support dark mode and outside click closing
-function showError(message) {
-    const errorDialog = document.getElementById('error-dialog');
-    const errorMessage = document.getElementById('error-message');
-
-    if (errorDialog && errorMessage) {
-        errorMessage.textContent = message;
-        errorDialog.showModal();
-
-        // Add close on outside click if not already added
-        if (!errorDialog.dataset.outsideClickHandled) {
-            errorDialog.addEventListener('click', (event) => {
-                if (event.target === errorDialog) {
-                    errorDialog.close();
-                }
-            });
-            errorDialog.dataset.outsideClickHandled = 'true';
-        }
-    } else {
-        // Create a dynamic error dialog if the static one isn't found
-        const dialog = document.createElement('dialog');
-        dialog.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-auto';
-
-        dialog.innerHTML = `
-            <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Error</h2>
-            <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
-            <div class="flex justify-end">
-                <button id="close-error" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">Cerrar</button>
-            </div>
-        `;
-
-        document.body.appendChild(dialog);
-        dialog.showModal();
-
-        dialog.querySelector('#close-error').addEventListener('click', () => {
-            dialog.close();
-            dialog.remove();
-        });
-
-        // Close on click outside
-        dialog.addEventListener('click', (event) => {
-            if (event.target === dialog) {
-                dialog.close();
-            }
-        });
-
-        // Clean up on close
-        dialog.addEventListener('close', () => {
-            dialog.remove();
-        });
-    }
-}
-
-// Update showMap function for dark mode
-function showMap(locations, patente) {
-    const dialog = document.getElementById('map-dialog');
-    const container = document.getElementById('map-container');
-    const title = document.getElementById('map-title');
-
-    // Update title with location count
-    title.textContent = `${patente} - ${locations.length} ubicación(es)`;
-
-    // Clear previous contents and create a new map container
-    container.innerHTML = '';
-    const mapDiv = document.createElement('div');
-    mapDiv.id = 'leaflet-map';
-    mapDiv.style.width = '100%';
-    mapDiv.style.height = '100%';
-    container.appendChild(mapDiv);
-
-    // Initialize Leaflet map
-    const map = L.map('leaflet-map');
-
-    // Use standard OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
-
-    // Create a feature group to hold all markers
-    const bounds = L.latLngBounds();
-
-    // Add markers to the feature group
-    locations.forEach((loc, index) => {
-        const latlng = L.latLng(loc.lat, loc.lon);
-        bounds.extend(latlng);
-        // Format the date nicely for the popup
-        const captureDate = loc.date ?
-            new Date(loc.date).toLocaleString('es-AR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }) : 'Fecha desconocida';
-
-        L.marker([loc.lat, loc.lon])
-            .addTo(map)
-            .bindPopup(`#${index + 1} - Capturado: ${captureDate}`);
-        // markerGroup.addLayer(marker);
-    });
-
-    // Calculate dynamic maxZoom based on the distance between points
-    let dynamicMaxZoom = 18; // Default value
-    let distance = -1;
-
-    if (locations.length > 1) {
-        // Calculate the diagonal distance of the bounds in meters
-        distance = bounds.getSouthWest().distanceTo(bounds.getNorthEast());
-
-        // Adjust zoom based on distance
-        if (distance < 500) dynamicMaxZoom = 16;       // <500m: very close
-        else if (distance < 1000) dynamicMaxZoom = 15; // <1km
-        else if (distance < 3000) dynamicMaxZoom = 15; // <3km
-        else if (distance < 10000) dynamicMaxZoom = 14; // <10km
-        else if (distance < 50000) dynamicMaxZoom = 12; // <50km
-        else if (distance < 200000) dynamicMaxZoom = 8; // <200km
-        else if (distance < 1000000) dynamicMaxZoom = 5; // <1000km
-        else if (distance < 5000000) dynamicMaxZoom = 4; // <5000km
-        else if (distance < 10000000) dynamicMaxZoom = 2; // <10000km
-        else dynamicMaxZoom = 1; // Very distant points
-    } else {
-        // For single location, use higher zoom
-        dynamicMaxZoom = 16;
-    }
-
-    if (devMode) {
-        console.info({
-            distance,
-            dynamicMaxZoom
-        });
-    }
-
-    // Fit the map to the computed bounds with padding
-    map.fitBounds(bounds, { padding: [100, 100], maxZoom: dynamicMaxZoom });
-
-    // Ensure proper rendering after dialog opens
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 100);
-
-    // Show dialog and clean up map on dialog close
-    dialog.showModal();
-    const closeHandler = () => {
-        map.remove();
-        dialog.removeEventListener('close', closeHandler);
-    };
-    dialog.addEventListener('close', closeHandler);
-}
-
-// Add this function to check for dev mode in URL
+/**
+ * Check for dev mode in URL and enable it if present
+ */
 function checkDevModeInUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('dev')) {
@@ -854,6 +802,9 @@ function checkDevModeInUrl() {
     }
 }
 
+/**
+ * Toggle dev mode on and off
+ */
 function toggleDevMode() {
     if (devMode) {
         // Turning off dev mode
@@ -883,6 +834,9 @@ function toggleDevMode() {
     actualizarLista();
 }
 
+/**
+ * Show the dialog to create a new license plate
+ */
 function mostrarCrearPatenteDialog() {
     const dialog = document.getElementById('patente-form-dialog');
     const form = document.getElementById('patente-form');
@@ -900,6 +854,12 @@ function mostrarCrearPatenteDialog() {
     dialog.showModal();
 }
 
+/**
+ * Show the dialog to edit an existing license plate
+ * @param {string} patente - License plate number
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ */
 function mostrarEditarPatenteDialog(patente, lat, lon) {
     const dialog = document.getElementById('patente-form-dialog');
     const form = document.getElementById('patente-form');
@@ -918,6 +878,10 @@ function mostrarEditarPatenteDialog(patente, lat, lon) {
     dialog.showModal();
 }
 
+/**
+ * Save the license plate from the form
+ * @param {Event} event - Form submit event
+ */
 function guardarPatente(event) {
     event.preventDefault();
 

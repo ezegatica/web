@@ -13,39 +13,30 @@
     <meta name="theme-color" content="#3498db">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Replace CDN with compiled CSS -->
     <link rel="stylesheet" href="assets/styles/patentes-output.css">
-
-    <!-- Add Geist Sans Font -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.2.5/400.min.css">
-
-    <!-- Add Leaflet CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Load Leaflet JS before our modules -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-    <!-- Remove the inline Tailwind config since it's now in tailwind.config.js -->
-
-    <!-- No need for inline styles as they're now in input.css -->
 </head>
 
 <body
     class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-200">
     <div class="w-full max-w-4xl mx-auto p-3 sm:p-4">
-        <!-- Remove the button from its current location -->
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
             <header class="text-center w-full mb-3 sm:mb-0">
                 <h1 id="page-title" class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-400 mb-2">
-                    Traductor de
-                    Patentes Diplomáticas</h1>
+                    Traductor de Patentes Diplomáticas
+                </h1>
                 <h2 class="text-sm sm:text-base text-gray-600 dark:text-gray-400">Para cuando andás por la calle y no
                     sabes de qué país o
                     institución es ese auto con patente rara</h2>
             </header>
         </div>
 
-        <!-- Add the button in absolute position at the top of the body -->
         <button id="theme-toggle" name="Theme toggle" aria-label="Toggle dark mode"
             class="absolute top-4 right-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none shadow-md z-10">
             <svg id="dark-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"
@@ -106,7 +97,6 @@
         <h2 class="text-xl sm:text-2xl font-bold text-primary-700 dark:text-primary-400 mb-4 sm:mb-6">Detalles de la
             Patente</h2>
         <div id="detail-container" class="space-y-4 sm:space-y-6">
-            <!-- Add patente decomposition section -->
             <div class="patente-decomposition bg-gray-100 dark:bg-gray-700 rounded-lg p-4 sm:p-6"
                 id="decomposition-container">
                 <h3 class="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Descomposición de
@@ -249,250 +239,8 @@
         style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);"
         title="Dev Mode">🔧</button>
 
-    <script src="assets/scripts/patentes.js"></script>
-    <script lang="javascript">
-        // Obtener elementos del DOM
-        const form = document.getElementById('form-patente');
-        const patenteInput = document.getElementById('patente');
-        const capturarButton = document.getElementById('capturar'); // Add back this reference
-
-        // Handlear submit del formulario
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            if (!patenteInput.value) {
-                showError('Debe ingresar una patente');
-                return;
-            }
-
-            const result = sanitizeInput(patenteInput.value);
-
-            if (result.error) {
-                showError(result.error);
-                return;
-            }
-
-            // Update dialog elements instead of the page
-            document.getElementById('traduccion-dialog').innerHTML = result.pais;
-            document.getElementById('codigo-dialog').innerHTML = `${result.codigo}: `;
-
-            if (result.categoria) {
-                document.getElementById('categoria-traduccion-dialog').innerHTML = `${result.categoriaTraduccion}: `;
-                document.getElementById('categoria-dialog').innerHTML = result.categoria;
-                document.getElementById('categoria-container').style.display = 'block';
-            } else {
-                document.getElementById('categoria-traduccion-dialog').innerHTML = '';
-                document.getElementById('categoria-dialog').innerHTML = '';
-                document.getElementById('categoria-container').style.display = 'none';
-            }
-
-            if (result.usoJefe) {
-                document.getElementById('uso-jefe-dialog').innerHTML = '<b>A</b>: Uso exclusivo de jefes de misiones diplomaticas';
-            } else {
-                document.getElementById('uso-jefe-dialog').innerHTML = '';
-            }
-
-            // Generate visual decomposition of the patente
-            const inputValue = result.input;
-            const visualContainer = document.getElementById('patente-visual');
-
-            // Clear previous content
-            visualContainer.innerHTML = '';
-
-            if (result.esPatenteCompleta) {
-                // Complete plate visualization (format: D000XXA)
-                // Split the patente into parts and add colored spans
-                const categoriaChar = inputValue.charAt(0);
-                const numeroStr = inputValue.substring(1, 4);
-                const paisStr = inputValue.substring(4, 6);
-                const usoChar = inputValue.charAt(6);
-
-                // Create span elements for each part
-                const categoriaSpan = document.createElement('span');
-                categoriaSpan.className = 'patente-part part-categoria';
-                categoriaSpan.textContent = categoriaChar;
-                categoriaSpan.title = result.categoria || 'Categoría';
-
-                const numeroSpan = document.createElement('span');
-                numeroSpan.className = 'patente-part part-numero';
-                numeroSpan.textContent = numeroStr;
-                numeroSpan.title = 'Número asignado';
-
-                const paisSpan = document.createElement('span');
-                paisSpan.className = 'patente-part part-pais';
-                paisSpan.textContent = paisStr;
-                paisSpan.title = result.pais;
-
-                const usoSpan = document.createElement('span');
-                usoSpan.className = 'patente-part part-uso';
-                usoSpan.textContent = usoChar;
-                usoSpan.title = result.usoJefe ? 'Uso exclusivo de jefes de misiones diplomaticas' : 'Uso general';
-
-                // Add all parts to the container
-                visualContainer.appendChild(categoriaSpan);
-                visualContainer.appendChild(numeroSpan);
-                visualContainer.appendChild(paisSpan);
-                visualContainer.appendChild(usoSpan);
-
-                document.getElementById('decomposition-container').style.display = 'block';
-            } else if (inputValue.length === 2) {
-                // Just country code visualization
-                const paisSpan = document.createElement('span');
-                paisSpan.className = 'patente-part part-pais';
-                paisSpan.textContent = result.codigo;
-                paisSpan.title = result.pais;
-
-                // Add country code to container
-                visualContainer.appendChild(paisSpan);
-
-                document.getElementById('decomposition-container').style.display = 'block';
-            } else {
-                // Hide the decomposition if not a recognizable pattern
-                document.getElementById('decomposition-container').style.display = 'none';
-            }
-
-            // Only show capture button for complete plates
-            if (result.esPatenteCompleta) {
-                // Only check for already captured plates if it's a complete plate
-                if (window.viewingCapturedPlate) {
-                    document.getElementById('capturar').style.display = 'none';
-                    // Reset the flag
-                    window.viewingCapturedPlate = false;
-                } else {
-                    document.getElementById('capturar').style.display = 'inline';
-                }
-            } else {
-                // Never show capture button for incomplete plates
-                document.getElementById('capturar').style.display = 'none';
-            }
-
-            // Show the dialog
-            document.getElementById('patente-detail-dialog').showModal();
-        });
-
-        // Function to show error dialog
-        function showError(message) {
-            document.getElementById('error-message').textContent = message;
-            document.getElementById('error-dialog').showModal();
-        }
-
-        // Need to define clearResults as it's still used in the reset handler
-        function clearResults() {
-            // Clear any visual elements that need to be reset
-            const errorElement = document.getElementById('error');
-            if (errorElement) errorElement.innerHTML = "";
-        }
-
-        // Handlear reset del formulario
-        form.addEventListener('reset', (event) => {
-            clearResults();
-            clearSearchParams();
-        });
-
-        // Precargar patente si viene en la URL solo al cargar el dom
-        document.addEventListener('DOMContentLoaded', function () {
-            // Check for dev mode in URL
-            checkDevModeInUrl();
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const patente = urlParams.get('patente');
-            if (patente) {
-                patenteInput.value = patente;
-                form.dispatchEvent(new Event('submit'));
-            }
-            actualizarLista();
-
-            // Add outside click handling to all static dialogs
-            const dialogs = document.querySelectorAll('dialog');
-            dialogs.forEach(dialog => {
-                dialog.addEventListener('click', (event) => {
-                    if (event.target === dialog) {
-                        dialog.close();
-                        clearSearchParams();
-                    }
-                });
-            });
-        });
-
-        capturarButton.addEventListener('click', handleCapturar)
-
-        // Cerrar el mapa cuando se hace clic en el botón cerrar
-        document.getElementById('close-map').addEventListener('click', () => {
-            document.getElementById('map-dialog').close();
-        });
-
-        // Event listeners for export/import dialogs
-        document.getElementById('close-export').addEventListener('click', () => {
-            document.getElementById('export-dialog').close();
-        });
-
-        document.getElementById('copy-export').addEventListener('click', () => {
-            const textarea = document.getElementById('export-content');
-            textarea.select();
-            document.execCommand('copy');
-        });
-
-        document.getElementById('close-import').addEventListener('click', () => {
-            document.getElementById('import-dialog').close();
-        });
-
-        document.getElementById('confirm-import').addEventListener('click', importarPatentes);
-
-
-        document.getElementById('close-error').addEventListener('click', () => {
-            document.getElementById('error-dialog').close();
-        });
-
-        // Dev mode toggle
-        let devModeClicks = 0;
-        document.getElementById('page-title').addEventListener('click', () => {
-            devModeClicks++;
-            if (devModeClicks >= 5) {
-                toggleDevMode();
-                devModeClicks = 0;
-            }
-        });
-
-        // Visible dev mode toggle for easier testing
-        document.getElementById('dev-mode-toggle').addEventListener('click', toggleDevMode);
-
-        // Patente form handlers
-        document.getElementById('patente-form').addEventListener('submit', guardarPatente);
-        document.getElementById('cancel-patente-form').addEventListener('click', () => {
-            document.getElementById('patente-form-dialog').close();
-        });
-
-        // Add event listener to close the detail dialog
-        document.getElementById('close-detail').addEventListener('click', () => {
-            document.getElementById('patente-detail-dialog').close();
-            clearSearchParams(); // Remove patente from URL
-        });
-
-        // Add theme toggle functionality
-        const themeToggleBtn = document.getElementById('theme-toggle');
-
-        // Check for saved theme preference or system preference
-        if (localStorage.getItem('theme') === 'dark' ||
-            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
-
-        // Toggle theme when button is clicked
-        themeToggleBtn.addEventListener('click', function () {
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            if (isDarkMode) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        });
-    </script>
+    <!-- Load our main module last, to ensure all DOM elements are available -->
+    <script type="module" src="assets/scripts/patentes/main.js"></script>
 </body>
 
 </html>
