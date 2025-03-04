@@ -5,7 +5,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
-    specPattern: 'assets/scripts/patentes/patentes.cy.js',
+    specPattern: 'assets/scripts/patentes/tests/e2e/patentes.cy.js',
     supportFile: false,
     baseUrl: 'http://localhost:5500'
   },
