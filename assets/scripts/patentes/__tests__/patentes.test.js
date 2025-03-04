@@ -1,136 +1,259 @@
+/**
+ * Comprehensive tests for patentes module including:
+ * - Input validation
+ * - Geolocation capture
+ * - Dev mode
+ * - Dialog updates
+ * - Import/Export
+ */
+import { 
+  sanitizeInput, clearResults, handleCapturar, 
+  updateDetailsDialog, initApp
+} from '../patentes.js';
+import { showError, showInfoDialog, showConfirmDialog } from '../ui.js';
+import { 
+  setupDomMocks, setupStorageMocks, setupElementMock, 
+  setupGeolocationMock
+} from './test-utils.js';
+
+// Mock UI module
 jest.mock('../ui.js', () => ({
-    showError: jest.fn(),
-    showInfoDialog: jest.fn()
+  showError: jest.fn(),
+  showInfoDialog: jest.fn(),
+  showConfirmDialog: jest.fn((title, message, onConfirm, onCancel) => {
+    if (onConfirm) onConfirm();
+    return { addEventListener: jest.fn(), dataset: {} };
+  }),
+  setupThemeToggle: jest.fn(),
+  showMap: jest.fn(),
 }));
 
-import { sanitizeInput, clearResults, handleCapturar, updateDetailsDialog } from '../patentes.js';
-import { showError } from '../ui.js'; // Mock if needed
+describe('Patentes Application', () => {
+  beforeEach(() => {
+    setupDomMocks();
+    const { localStorageMock } = setupStorageMocks();
+    setupGeolocationMock();
+    jest.clearAllMocks();
+    localStorageMock.clear();
+    
+    // Reset app state
+    window.devMode = false;
+    window.devModeClicks = 0;
+  });
 
-describe('sanitizeInput', () => {
-    test('returns country code for a valid 2-letter input', () => {
-        const result = sanitizeInput('AR');
-        expect(result.pais).toBeDefined();
-        expect(result.error).toBeNull();
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe('Input Validation', () => {
+    test('should parse country code correctly', () => {
+      const result = sanitizeInput('BG');
+      
+      expect(result).toEqual({
+        input: 'BG',
+        codigo: 'BG',
+        pais: 'REINO DE ESPAÑA',
+        categoria: null,
+        categoriaTraduccion: null,
+        usoJefe: false,
+        esPatenteCompleta: false,
+        error: null
+      });
     });
-
-    test('returns error for an unknown 2-letter input', () => {
-        const result = sanitizeInput('ZZ');
-        expect(result.error).toMatch(/código de país no encontrado/i);
+    
+    test('should parse complete license plate', () => {
+      const result = sanitizeInput('D001BGA');
+      
+      expect(result).toEqual({
+        input: 'D001BGA',
+        codigo: 'BG',
+        pais: 'REINO DE ESPAÑA',
+        categoria: 'CUERPO DIPLOMATICO',
+        categoriaTraduccion: 'D',
+        usoJefe: false,
+        esPatenteCompleta: true,
+        error: null
+      });
     });
-
-    test('handles valid full plate format', () => {
-        const result = sanitizeInput('D123ARC');  // use a known country code substring 'AR'
-        expect(result.esPatenteCompleta).toBe(true);
-        expect(result.error).toBeNull();
+    
+    test('should handle various error cases', () => {
+      // Invalid country code
+      expect(sanitizeInput('XX').error).toBe('Código de país no encontrado');
+      
+      // Invalid category
+      expect(sanitizeInput('X001BGA').error).toBe('Categoría no encontrada');
+      
+      // Invalid country in complete patente
+      expect(sanitizeInput('D001XXA').error).toBe('Código de país no encontrado');
+      
+      // Invalid format
+      expect(sanitizeInput('INVALID').error).toContain('Formato inválido');
+      
+      // Empty input
+      expect(sanitizeInput('').error).toContain('Formato inválido');
+      
+      // Whitespace
+      expect(sanitizeInput('   ').error).toContain('Formato inválido');
+      
+      // Malformed
+      expect(sanitizeInput('D12BG').error).toContain('Formato inválido');
+      
+      // Wrong length country code
+      expect(sanitizeInput('BGX').error).toContain('Formato inválido');
+      
+      // Country code with numbers
+      expect(sanitizeInput('B1').error).toContain('Formato inválido');
     });
-
-    test('returns error for invalid plate format', () => {
-        const result = sanitizeInput('ABC123');
-        expect(result.error).toMatch(/formato inválido/i);
+    
+    test('should clear error messages', () => {
+      const mockErrorElement = { innerHTML: 'Some error' };
+      setupElementMock({ 'error': mockErrorElement });
+      
+      clearResults();
+      
+      expect(mockErrorElement.innerHTML).toBe('');
     });
-});
+  });
 
-describe('clearResults', () => {
+  describe('Geolocation and Capture', () => {
+    test('should add patente with location when geolocation succeeds', () => {
+      setupElementMock({
+        'patente': { value: 'D001BGA' },
+        'patente-detail-dialog': { close: jest.fn() }
+      });
+      
+      handleCapturar();
+      
+      // Check localStorage was updated
+      expect(window.localStorage.setItem).toHaveBeenCalledWith('patentes', expect.any(String));
+      expect(showInfoDialog).toHaveBeenCalledWith("Éxito", "Patente capturada con éxito");
+      expect(document.getElementById('patente-detail-dialog').close).toHaveBeenCalled();
+    });
+    
+    test('should show error when geolocation permission is denied', () => {
+      // Override default geolocation mock to fail
+      setupGeolocationMock(false);
+      
+      handleCapturar();
+      
+      expect(showError).toHaveBeenCalledWith("Por favor, permita el acceso a la ubicación para poder capturar la patente");
+    });
+  });
+
+  describe('Dialog Updates', () => {
+    test('updateDetailsDialog should handle complete patente', () => {
+      const mockElements = {
+        'traduccion-dialog': { innerHTML: '' },
+        'codigo-dialog': { innerHTML: '' },
+        'categoria-traduccion-dialog': { innerHTML: '' },
+        'categoria-dialog': { innerHTML: '' },
+        'categoria-container': { style: { display: 'none' } },
+        'uso-jefe-dialog': { innerHTML: '' },
+        'patente-visual': { innerHTML: '' },
+        'decomposition-container': { style: { display: 'none' } },
+        'capturar': { style: { display: 'none' } }
+      };
+      setupElementMock(mockElements);
+      
+      const result = {
+        input: 'D001BGA',
+        codigo: 'BG',
+        pais: 'REINO DE ESPAÑA',
+        categoria: 'CUERPO DIPLOMATICO',
+        categoriaTraduccion: 'D',
+        usoJefe: true,
+        esPatenteCompleta: true
+      };
+      
+      updateDetailsDialog(result);
+      
+      expect(document.getElementById('categoria-traduccion-dialog').innerHTML).toBe('D: ');
+      expect(document.getElementById('categoria-dialog').innerHTML).toBe('CUERPO DIPLOMATICO');
+      expect(document.getElementById('uso-jefe-dialog').innerHTML).toContain('Uso exclusivo de jefes');
+      expect(document.getElementById('capturar').style.display).toBe('inline');
+    });
+    
+    test('updateDetailsDialog should handle country code only', () => {
+      const mockElements = {
+        'traduccion-dialog': { innerHTML: '' },
+        'codigo-dialog': { innerHTML: '' },
+        'categoria-traduccion-dialog': { innerHTML: '' },
+        'categoria-dialog': { innerHTML: '' },
+        'categoria-container': { style: { display: 'block' } },
+        'uso-jefe-dialog': { innerHTML: '' },
+        'patente-visual': { innerHTML: '' },
+        'decomposition-container': { style: { display: 'none' } },
+        'capturar': { style: { display: 'inline' } }
+      };
+      setupElementMock(mockElements);
+      
+      const result = {
+        input: 'BG',
+        codigo: 'BG',
+        pais: 'REINO DE ESPAÑA',
+        categoria: null,
+        categoriaTraduccion: null,
+        usoJefe: false,
+        esPatenteCompleta: false
+      };
+      
+      updateDetailsDialog(result);
+      
+      expect(document.getElementById('categoria-container').style.display).toBe('none');
+      expect(document.getElementById('uso-jefe-dialog').innerHTML).toBe('');
+      expect(document.getElementById('capturar').style.display).toBe('none');
+    });
+  });
+
+  describe('Dev Mode', () => {
     beforeEach(() => {
-        document.body.innerHTML = '<div id="error"></div>';
+      // Reset dev mode state
+      window.devMode = false;
+      window.devModeClicks = 0;
     });
-
-    test('clears the #error element content', () => {
-        const errorDiv = document.getElementById('error');
-        errorDiv.innerHTML = 'Some error';
-        clearResults();
-        expect(errorDiv.innerHTML).toBe('');
+    
+    test('initApp should activate dev mode from URL parameter', () => {
+      // Set up URL params to include dev
+      const { mockSearchParams } = setupCommonMocks();
+      mockSearchParams.has.mockImplementation(key => key === 'dev');
+      setupElementMock();
+      
+      initApp();
+      
+      expect(document.body.classList.add).toHaveBeenCalledWith('dev-mode');
     });
-});
-
-describe('handleCapturar', () => {
-    beforeEach(() => {
-        global.navigator.geolocation = {
-            getCurrentPosition: jest.fn((successCallback) => {
-                successCallback({ coords: { latitude: -34.6037, longitude: -58.3816 } });
-            })
-        };
-        // Add required elements including the missing "capturar" button
-        document.body.innerHTML = `
-      <input id="patente" value="D123ARC" />
-      <button id="capturar"></button>
-      <div id="patentes-capturadas"></div>
-      <dialog id="patente-detail-dialog" class="dummy-dialog">
-        <button id="dummy-close">Close</button>
-      </dialog>
-    `;
-        if (!document.getElementById('patente-detail-dialog').close) {
-            document.getElementById('patente-detail-dialog').close = jest.fn();
-        }
+    
+    test('should toggle dev mode after 5 clicks on page title', () => {
+      setupElementMock();
+      initApp();
+      
+      // Get the stored click handler
+      const clickHandler = document.getElementById.pageTitleClickHandler;
+      
+      // Simulate 5 clicks
+      for (let i = 0; i < 5; i++) {
+        clickHandler();
+      }
+      
+      expect(document.body.classList.add).toHaveBeenCalledWith('dev-mode');
+      expect(showInfoDialog).toHaveBeenCalledWith("Modo desarrollador", expect.any(String));
     });
-
-    test('calls showError if geolocation fails', () => {
-        navigator.geolocation.getCurrentPosition.mockImplementation((_, errorCallback) => {
-            errorCallback({ code: 1 });
-        });
-        handleCapturar();
-        expect(showError).toHaveBeenCalledWith(expect.stringContaining('Por favor, permita'));
+    
+    test('should toggle off dev mode when already active', () => {
+      setupElementMock();
+      
+      // Set initial state
+      window.devMode = true;
+      document.body.classList.contains.mockReturnValue(true);
+      
+      initApp();
+      
+      // Get dev toggle click handler and click it
+      const clickHandler = document.getElementById.devToggleClickHandler;
+      clickHandler();
+      
+      expect(document.body.classList.remove).toHaveBeenCalledWith('dev-mode');
+      expect(showInfoDialog).toHaveBeenCalledWith("Modo desarrollador", "Modo desarrollador desactivado");
     });
-
-    /* DEV NOTE: 
-    This is wrong because handleCapturar needs access to the geolocation, so it has to be mocked, as it returns 
-    "1: "Por favor, permita el acceso a la ubicación para poder capturar la patente" 
-    (side note: maybe its because it is not clearing the test run before?) 
-    */
-
-    //   test('adds patent if geolocation succeeds', () => {
-    //     handleCapturar();
-    //     expect(showError).not.toHaveBeenCalled();
-    //     const list = document.getElementById('patentes-capturadas');
-    //     expect(list.innerHTML).toMatch(/Patentes capturadas/);
-    //   });
-});
-
-describe('updateDetailsDialog', () => {
-    beforeEach(() => {
-        document.body.innerHTML = `
-      <div id="traduccion-dialog"></div>
-      <div id="codigo-dialog"></div>
-      <div id="categoria-traduccion-dialog"></div>
-      <div id="categoria-dialog"></div>
-      <div id="categoria-container"></div>
-      <div id="uso-jefe-dialog"></div>
-      <div id="patente-visual"></div>
-      <div id="decomposition-container"></div>
-      <button id="capturar"></button>
-    `;
-    });
-
-    test('updates dialog content for complete plate', () => {
-        const result = {
-            pais: 'REPÚBLICA DE INDONESIA',
-            codigo: 'AR',
-            categoria: 'CUERPO DIPLOMATICO',
-            categoriaTraduccion: 'D',
-            usoJefe: true,
-            esPatenteCompleta: true,
-            input: 'D123ARC',
-            error: null
-        };
-        updateDetailsDialog(result);
-        expect(document.getElementById('traduccion-dialog').innerHTML).toMatch(/REPÚBLICA/);
-        expect(document.getElementById('categoria-container').style.display).toBe('block');
-        expect(document.getElementById('uso-jefe-dialog').innerHTML).toMatch(/Uso exclusivo/);
-    });
-
-    test('updates dialog content for 2-letter code', () => {
-        const result = {
-            pais: 'REPÚBLICA POPULAR CHINA',
-            codigo: 'AR',
-            categoria: null,
-            categoriaTraduccion: null,
-            usoJefe: false,
-            esPatenteCompleta: false,
-            input: 'AR',
-            error: null
-        };
-        updateDetailsDialog(result);
-        expect(document.getElementById('traduccion-dialog').innerHTML).toMatch(/REPÚBLICA/);
-        expect(document.getElementById('categoria-container').style.display).toBe('none');
-    });
+  });
 });
