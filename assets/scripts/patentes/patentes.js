@@ -37,36 +37,44 @@ function setupFormHandlers() {
     const patenteInput = document.getElementById('patente');
     const capturarButton = document.getElementById('capturar');
 
-    // Form submission handler
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
+    // Add defensive checks for testing environment
+    if (form) {
+        // Form submission handler
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
 
-        if (!patenteInput.value) {
-            showError('Debe ingresar una patente');
-            return;
-        }
+            if (!patenteInput || !patenteInput.value) {
+                showError('Debe ingresar una patente');
+                return;
+            }
 
-        const result = sanitizeInput(patenteInput.value);
+            const result = sanitizeInput(patenteInput.value);
 
-        if (result.error) {
-            showError(result.error);
-            return;
-        }
+            if (result.error) {
+                showError(result.error);
+                return;
+            }
 
-        updateDetailsDialog(result);
+            updateDetailsDialog(result);
 
-        // Show the dialog
-        document.getElementById('patente-detail-dialog').showModal();
-    });
+            // Show the dialog
+            const dialog = document.getElementById('patente-detail-dialog');
+            if (dialog && dialog.showModal) {
+                dialog.showModal();
+            }
+        });
 
-    // Form reset handler
-    form.addEventListener('reset', (event) => {
-        clearResults();
-        clearSearchParams();
-    });
+        // Form reset handler
+        form.addEventListener('reset', (event) => {
+            clearResults();
+            clearSearchParams();
+        });
+    }
 
     // Capture button handler
-    capturarButton.addEventListener('click', handleCapturar);
+    if (capturarButton) {
+        capturarButton.addEventListener('click', handleCapturar);
+    }
 }
 
 /**
@@ -150,12 +158,21 @@ function setupDialogOutsideClickHandlers() {
 /**
  * Check URL for patente parameter and fill input
  */
-function processUrlParams() {
+export function processUrlParams() {
     const urlParams = new URLSearchParams(window.location.search);
     const patente = urlParams.get('patente');
     if (patente) {
-        document.getElementById('patente').value = patente;
-        document.getElementById('form-patente').dispatchEvent(new Event('submit'));
+        const patenteInput = document.getElementById('patente');
+        const form = document.getElementById('form-patente');
+        
+        if (patenteInput) {
+            patenteInput.value = patente;
+            
+            // Only dispatch event if form exists
+            if (form) {
+                form.dispatchEvent(new Event('submit'));
+            }
+        }
     }
 }
 
@@ -718,7 +735,7 @@ function performImport(patentes) {
  * Handle clicks on captured plates list using event delegation
  * @param {Event} event - Click event
  */
-function handleListClick(event) {
+export function handleListClick(event) {
     const target = event.target;
 
     if (target.id === 'ver-detalle') {
@@ -807,7 +824,7 @@ function checkDevModeInUrl() {
 /**
  * Toggle dev mode on and off
  */
-function toggleDevMode() {
+export function toggleDevMode() {
     if (devMode) {
         // Turning off dev mode
         devMode = false;
@@ -884,7 +901,7 @@ function mostrarEditarPatenteDialog(patente, lat, lon) {
  * Save the license plate from the form
  * @param {Event} event - Form submit event
  */
-function guardarPatente(event) {
+export function guardarPatente(event) {
     event.preventDefault();
 
     const form = document.getElementById('patente-form');
