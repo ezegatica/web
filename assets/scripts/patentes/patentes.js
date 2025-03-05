@@ -91,12 +91,7 @@ function setupDialogHandlers() {
         document.getElementById('export-dialog').close();
     });
 
-    document.getElementById('copy-export').addEventListener('click', () => {
-        const textarea = document.getElementById('export-content');
-        textarea.select();
-        document.execCommand('copy');
-        showInfoDialog("Copiado", "Código copiado al portapapeles");
-    });
+    document.getElementById('copy-export').addEventListener('click', copyExportHandler);
 
     // Import dialog
     document.getElementById('close-import').addEventListener('click', () => {
@@ -418,7 +413,7 @@ function addPatente(patente, lat, lon) {
 /**
  * Update the UI list of captured plates
  */
-function actualizarLista() {
+export function actualizarLista() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const list = document.getElementById('patentes-capturadas');
 
@@ -650,7 +645,7 @@ function actualizarLista() {
 /**
  * Export captured plates to a Base64 string
  */
-function exportarPatentes() {
+export function exportarPatentes() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const patentesString = JSON.stringify(patentes);
     const patentesBase64 = btoa(encodeURIComponent(patentesString));
@@ -669,7 +664,7 @@ function exportarPatentes() {
 /**
  * Show the import dialog
  */
-function mostrarImportarDialog() {
+export function mostrarImportarDialog() {
     const dialog = document.getElementById('import-dialog');
     dialog.showModal();
 }
@@ -677,7 +672,7 @@ function mostrarImportarDialog() {
 /**
  * Import patentes from a Base64 string
  */
-function importarPatentes() {
+export function importarPatentes() {
     const textarea = document.getElementById('import-content');
     const base64Content = textarea.value.trim();
 
@@ -724,7 +719,7 @@ function importarPatentes() {
  * Helper function to avoid code duplication in importarPatentes
  * @param {Array} patentes - Array of license plate objects to import
  */
-function performImport(patentes) {
+export function performImport(patentes) {
     localStorage.setItem('patentes', JSON.stringify(patentes));
     document.getElementById('import-dialog').close();
     actualizarLista();
@@ -795,7 +790,7 @@ export function handleListClick(event) {
 /**
  * Show a confirmation dialog to delete all captured plates
  */
-function confirmarEliminarTodo() {
+export function confirmarEliminarTodo() {
     showConfirmDialog(
         'Eliminar todas las patentes',
         '¿Estás seguro que deseas eliminar TODAS las patentes? Esta acción no se puede deshacer.',
@@ -856,7 +851,7 @@ export function toggleDevMode() {
 /**
  * Show the dialog to create a new license plate
  */
-function mostrarCrearPatenteDialog() {
+export function mostrarCrearPatenteDialog() {
     const dialog = document.getElementById('patente-form-dialog');
     const form = document.getElementById('patente-form');
     const title = document.getElementById('patente-form-title');
@@ -879,7 +874,7 @@ function mostrarCrearPatenteDialog() {
  * @param {number} lat - Latitude
  * @param {number} lon - Longitude
  */
-function mostrarEditarPatenteDialog(patente, lat, lon) {
+export function mostrarEditarPatenteDialog(patente, lat, lon) {
     const dialog = document.getElementById('patente-form-dialog');
     const form = document.getElementById('patente-form');
     const title = document.getElementById('patente-form-title');
@@ -943,4 +938,25 @@ export function guardarPatente(event) {
     localStorage.setItem('patentes', JSON.stringify(patentes));
     document.getElementById('patente-form-dialog').close();
     actualizarLista();
+}
+
+// Export these functions for testing
+export {
+  setupFormHandlers,
+  setupDialogHandlers,
+  setupDevModeHandlers,
+  setupDialogOutsideClickHandlers,
+  checkDevModeInUrl,
+  addPatente,
+  copyExportHandler
+};
+
+/**
+ * Handler for copy-export button
+ */
+function copyExportHandler() {
+  const textarea = document.getElementById('export-content');
+  textarea.select();
+  document.execCommand('copy');
+  showInfoDialog("Copiado", "Código copiado al portapapeles");
 }
