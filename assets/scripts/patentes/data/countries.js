@@ -1,4 +1,8 @@
-const patente = {
+/**
+ * Dictionary of diplomatic license plate country codes
+ * Maps two-letter country codes to their full country names
+ */
+export const countries = {
     "AA": "SANTA SEDE",
     "AC": "REPÚBLICA FEDERAL DE ALEMANIA",
     "AD": "REPÚBLICA DE ANGOLA",
@@ -123,91 +127,4 @@ const patente = {
     "XC": "FUNDACIÓN HANNS SEIDEL",
     "XD": "FUNDACIÓN FRIEDRICH NAUMANN",
     "XE": "FUNDACIÓN FRIEDRICH EBERT"
-}
-
-const categoria = {
-    "D": "CUERPO DIPLOMATICO",
-    "I": "ORGANISMO INTERNACIONAL",
-    "C": "CUERPO CONSULAR",
-    "A": "PERSONAL ADMINISTRATIVO",
-    "M": "MISION ESPECIAL"
-}
-
-function obtenerPais(codigo) {
-    const pick = patente[codigo];
-    if (pick === undefined) {
-        return "País no encontrado";
-    }
-    return pick;
-}
-
-function obtenerCategoria(codigo) {
-    const pick = categoria[codigo];
-    if (pick === undefined) {
-        return "Categoría no encontrada";
-    }
-    return pick;
-}
-
-function sanitizeInput(input) {
-    const patenteClean = input.toUpperCase().trim();
-    let error = null;
-    let categoria = null;
-    let categoriaTraduccion = null;
-    let usoJefe = false;
-    /* 
-        La patente puede ser ya sea XX (teniendo el codigo pais directo) o dentro de un string mas largo, sea D039CPX, siendo CP el codigo de la REPÚBLICA PORTUGUESA.
-    */
-    const regexCodigoPais = /[A-Z]{2}/;
-    const match = patenteClean.match(regexCodigoPais);
-    if (match === null) {
-        error =  "Código de país no encontrado";
-        return {
-            codigo: null,
-            categoria,
-            error
-        }
-    }
-
-
-    // D039CPX -> X000XXX
-    const patenteCompletaRegex = /[A-Z]{1}\d{3}[A-Z]{3}/;
-    const esPatenteCompleta = patenteClean.length > 2 && patenteClean.match(patenteCompletaRegex)
-    if (esPatenteCompleta) {
-        const regexCategoria = /[A-Z]{1}/;
-        const matchCategoria = patenteClean.match(regexCategoria);
-        if (matchCategoria !== null) {
-            categoria = obtenerCategoria(matchCategoria[0]);
-            categoriaTraduccion = matchCategoria[0];
-        } else {
-            error = "Categoría no encontrada";
-        }
-        // La ultima letra determina si es uso de jefe de misión o no.
-        usoJefe = patenteClean[patenteClean.length - 1] === 'A';
-    }
-
-    return {
-        codigo: match[0],
-        categoria,
-        categoriaTraduccion,
-        error,
-        usoJefe
-    }
-}
-
-function clearResults() {
-    const ids = ['codigo','categoria', 'categoria-traduccion','traduccion', 'uso-jefe']
-    for (let id of ids) {
-        document.getElementById(id).innerHTML = "";
-    }
-}
-
-function clearError() {
-    document.getElementById('error').innerHTML = "";
-}
-
-function clearSearchParams() {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('patente');
-    window.history.replaceState({}, '', url); 
-}
+};

@@ -20,3 +20,4 @@ User-Agent: *
 
 Disallow: /assets
 Disallow: /cv
+Disallow: /cv-en

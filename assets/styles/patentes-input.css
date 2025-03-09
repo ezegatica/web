@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles that complement Tailwind */
+:root {
+  --dev-background-color: #fff3c4;
+  --dev-border-color: #ffd700;
+  --dev-text-color: #8b6900;
+
+  /* Colors for the patente parts */
+  --categoria-color: #3498db;
+  --numero-color: #2ecc71;
+  --pais-color: #e74c3c;
+  --uso-color: #f39c12;
+}
+
+.dark {
+  --categoria-color: #2980b9;
+  --numero-color: #27ae60;
+  --pais-color: #c0392b;
+  --uso-color: #d35400;
+  --dev-background-color: #665800;
+  --dev-border-color: #b39700;
+  --dev-text-color: #ffeb99;
+}
+
+/* Add all your existing custom CSS here */
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dark dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dev-mode .dev-button {
+  display: inline-block;
+}
+
+.patente-part {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 2px;
+  font-weight: bold;
+  border-radius: 0.375rem;
+  color: white;
+}
+
+.part-categoria {
+  background-color: var(--categoria-color);
+}
+
+.part-numero {
+  background-color: var(--numero-color);
+}
+
+.part-pais {
+  background-color: var(--pais-color);
+}
+
+.part-uso {
+  background-color: var(--uso-color);
+}
+
+#dev-mode-toggle {
+  display: none;
+}
+
+.dev-mode #dev-mode-toggle {
+  display: block;
+}
+
+/* Leaflet Map in Dark Mode */
+.dark .leaflet-tile {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+.dark .leaflet-container {
+  background: #303030;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .patente-part {
+      font-size: 1.1rem;
+      padding: 6px 12px;
+      margin: 3px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+      font-size: 16px !important;
+      /* Prevents iOS zoom on focus */
+  }
+
+  dialog {
+      width: 92vw !important;
+      max-width: 92vw !important;
+      padding: 1rem !important;
+  }
+}
