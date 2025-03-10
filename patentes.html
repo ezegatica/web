@@ -13,6 +13,18 @@
     <meta name="theme-color" content="#3498db">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <!-- Prevent flash of wrong theme -->
+    <script>
+        // Check localStorage for theme preference or use system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || 
+            (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <link rel="stylesheet" href="assets/styles/patentes-output.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.2.5/400.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
