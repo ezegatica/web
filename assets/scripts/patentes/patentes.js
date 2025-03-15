@@ -1,6 +1,7 @@
 import { countries } from './data/countries.js';
 import { categories } from './data/categories.js';
 import { showError, showInfoDialog, showConfirmDialog, showMap, setupThemeToggle } from './ui.js';
+import { initShare } from './share.js';
 
 // State variables
 let devMode = false;
@@ -15,18 +16,21 @@ export function initApp() {
     setupDialogHandlers();
     setupDevModeHandlers();
     setupThemeToggle();
-    
+
     // Check for dev mode in URL
     checkDevModeInUrl();
-    
+
     // Process URL parameters (e.g., pre-filled patente)
     processUrlParams();
-    
+
     // Update the list of captured plates
     actualizarLista();
 
     // Add outside click handling to all static dialogs
     setupDialogOutsideClickHandlers();
+
+    // Initialize share
+    initShare();
 }
 
 /**
@@ -159,10 +163,10 @@ export function processUrlParams() {
     if (patente) {
         const patenteInput = document.getElementById('patente');
         const form = document.getElementById('form-patente');
-        
+
         if (patenteInput) {
             patenteInput.value = patente;
-            
+
             // Only dispatch event if form exists
             if (form) {
                 form.dispatchEvent(new Event('submit'));
@@ -303,7 +307,7 @@ export function updateDetailsDialog(result) {
 function updateVisualDecomposition(result) {
     const inputValue = result.input;
     const visualContainer = document.getElementById('patente-visual');
-    
+
     // Clear previous content
     visualContainer.innerHTML = '';
 
@@ -316,22 +320,22 @@ function updateVisualDecomposition(result) {
 
         // Create span elements for each part
         const categoriaSpan = document.createElement('span');
-        categoriaSpan.className = 'patente-part part-categoria';
+        categoriaSpan.className = 'patente-part part-categoria flex items-center justify-center';
         categoriaSpan.textContent = categoriaChar;
         categoriaSpan.title = result.categoria || 'Categoría';
 
         const numeroSpan = document.createElement('span');
-        numeroSpan.className = 'patente-part part-numero';
+        numeroSpan.className = 'patente-part part-numero flex items-center justify-center';
         numeroSpan.textContent = numeroStr;
         numeroSpan.title = 'Número asignado';
 
         const paisSpan = document.createElement('span');
-        paisSpan.className = 'patente-part part-pais';
+        paisSpan.className = 'patente-part part-pais flex items-center justify-center';
         paisSpan.textContent = paisStr;
         paisSpan.title = result.pais;
 
         const usoSpan = document.createElement('span');
-        usoSpan.className = 'patente-part part-uso';
+        usoSpan.className = 'patente-part part-uso flex items-center justify-center';
         usoSpan.textContent = usoChar;
         usoSpan.title = result.usoJefe ? 'Uso exclusivo de jefes de misiones diplomaticas' : 'Uso general';
 
@@ -345,7 +349,7 @@ function updateVisualDecomposition(result) {
     } else if (inputValue.length === 2) {
         // Just country code visualization
         const paisSpan = document.createElement('span');
-        paisSpan.className = 'patente-part part-pais';
+        paisSpan.className = 'patente-part part-pais flex items-center justify-center';
         paisSpan.textContent = result.codigo;
         paisSpan.title = result.pais;
 
@@ -546,9 +550,9 @@ export function actualizarLista() {
                 <button type="button" id="ver-detalle" data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-700/30 text-primary-700 dark:text-primary-300 rounded hover:bg-primary-200 dark:hover:bg-primary-700/50 transition-colors">Ver detalle</button>
                 <button type="button" id="ver-mapa" data-locations='${locationData}' data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors">Ver en mapa</button>
                 <button type="button" id="eliminar-grupo" data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors">${patenteInstances.length > 1 ? 'Eliminar todos' : 'Eliminar'}</button>
-                ${devMode && patenteInstances.length === 1 ? 
-                    `<button type="button" id="editar" data-patente="${patenteInstances[0].patente}" data-lat="${patenteInstances[0].lat}" data-lon="${patenteInstances[0].lon}" class="dev-button px-2 py-1 text-xs rounded hover:opacity-80" style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);">Editar</button>` 
-                    : ''}
+                ${devMode && patenteInstances.length === 1 ?
+                `<button type="button" id="editar" data-patente="${patenteInstances[0].patente}" data-lat="${patenteInstances[0].lat}" data-lon="${patenteInstances[0].lon}" class="dev-button px-2 py-1 text-xs rounded hover:opacity-80" style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);">Editar</button>`
+                : ''}
             </div>
         `;
 
@@ -814,6 +818,7 @@ function checkDevModeInUrl() {
         devMode = true;
         document.body.classList.add('dev-mode');
     }
+    window.devMode = devMode;
 }
 
 /**
@@ -844,6 +849,8 @@ export function toggleDevMode() {
 
         showInfoDialog("Modo desarrollador", "Modo desarrollador activado");
     }
+
+    window.devMode = devMode;
 
     actualizarLista();
 }
@@ -942,21 +949,22 @@ export function guardarPatente(event) {
 
 // Export these functions for testing
 export {
-  setupFormHandlers,
-  setupDialogHandlers,
-  setupDevModeHandlers,
-  setupDialogOutsideClickHandlers,
-  checkDevModeInUrl,
-  addPatente,
-  copyExportHandler
+    setupFormHandlers,
+    setupDialogHandlers,
+    setupDevModeHandlers,
+    setupDialogOutsideClickHandlers,
+    checkDevModeInUrl,
+    addPatente,
+    copyExportHandler,
+    devMode
 };
 
 /**
  * Handler for copy-export button
  */
 function copyExportHandler() {
-  const textarea = document.getElementById('export-content');
-  textarea.select();
-  document.execCommand('copy');
-  showInfoDialog("Copiado", "Código copiado al portapapeles");
+    const textarea = document.getElementById('export-content');
+    textarea.select();
+    document.execCommand('copy');
+    showInfoDialog("Copiado", "Código copiado al portapapeles");
 }
