@@ -7,6 +7,7 @@ module.exports = defineConfig({
     },
     specPattern: 'assets/scripts/patentes/patentes.cy.js',
     supportFile: false,
-    baseUrl: 'http://localhost:5500'
+    baseUrl: 'http://localhost:5500',
+    video: true,
   },
 });

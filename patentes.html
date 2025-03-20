@@ -17,7 +17,7 @@
     <script>
         // Check localStorage for theme preference or use system preference
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark' || 
+        if (savedTheme === 'dark' ||
             (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -33,6 +33,11 @@
     <!-- Load Leaflet JS before our modules -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Add html2canvas for screenshot functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+        integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body
@@ -117,24 +122,24 @@
                 <div id="patente-visual" class="flex flex-wrap gap-2 mb-4 justify-center text-lg sm:text-xl"></div>
 
                 <div class="patente-legend grid grid-cols-2 gap-3 mt-4 sm:grid-cols-4 sm:gap-4 sm:mt-6">
-                    <div class="legend-item flex items-center">
+                    <div class="legend-item flex items-center justify-center h-full">
                         <div class="legend-color w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 rounded"
                             style="background-color: var(--categoria-color);"></div>
                         <div class="legend-text text-xs sm:text-sm dark:text-gray-300">Categoría</div>
                     </div>
-                    <div class="legend-item flex items-center">
+                    <div class="legend-item flex items-center justify-center h-full">
                         <div class="legend-color w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 rounded"
                             style="background-color: var(--numero-color);">
                         </div>
                         <div class="legend-text text-xs sm:text-sm dark:text-gray-300">Número</div>
                     </div>
-                    <div class="legend-item flex items-center">
+                    <div class="legend-item flex items-center justify-center h-full">
                         <div class="legend-color w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 rounded"
                             style="background-color: var(--pais-color);">
                         </div>
                         <div class="legend-text text-xs sm:text-sm dark:text-gray-300">Código País</div>
                     </div>
-                    <div class="legend-item flex items-center">
+                    <div class="legend-item flex items-center justify-center h-full">
                         <div class="legend-color w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 rounded"
                             style="background-color: var(--uso-color);">
                         </div>
@@ -156,9 +161,14 @@
             </div>
         </div>
         <div class="dialog-footer mt-6 sm:mt-8 flex flex-col sm:flex-row justify-between gap-3">
-            <button id="capturar" type="button"
-                class="order-2 sm:order-1 w-full sm:w-auto px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500">Capturar
-                Ubicación</button>
+            <div class="order-2 sm:order-1 flex flex-col sm:flex-row gap-2 sm:gap-3">
+                <button id="capturar" type="button"
+                    class="w-full sm:w-auto px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500">Capturar
+                    Ubicación</button>
+                <button id="compartir-whatsapp" type="button"
+                    class="w-full sm:w-auto px-4 py-2 bg-primary-800 dark:bg-primary-900 text-white rounded-md hover:bg-primary-900 dark:hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-700">
+                    Compartir</button>
+            </div>
             <button id="close-detail"
                 class="order-1 sm:order-2 w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">Cerrar</button>
         </div>

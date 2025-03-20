@@ -1,6 +1,7 @@
 import { countries } from './data/countries.js';
 import { categories } from './data/categories.js';
 import { showError, showInfoDialog, showConfirmDialog, showMap, setupThemeToggle } from './ui.js';
+import { initShare } from './share.js';
 
 // State variables
 let devMode = false;
@@ -15,18 +16,24 @@ export function initApp() {
     setupDialogHandlers();
     setupDevModeHandlers();
     setupThemeToggle();
-    
+
     // Check for dev mode in URL
     checkDevModeInUrl();
-    
+
     // Process URL parameters (e.g., pre-filled patente)
     processUrlParams();
-    
+
     // Update the list of captured plates
     actualizarLista();
 
     // Add outside click handling to all static dialogs
     setupDialogOutsideClickHandlers();
+
+    // Initialize share with both functions
+    initShare({
+        showErrorFn: showError,
+        showInfoDialogFn: showInfoDialog
+    });
 }
 
 /**
@@ -83,12 +90,7 @@ function setupDialogHandlers() {
         document.getElementById('export-dialog').close();
     });
 
-    document.getElementById('copy-export').addEventListener('click', () => {
-        const textarea = document.getElementById('export-content');
-        textarea.select();
-        document.execCommand('copy');
-        showInfoDialog("Copiado", "Código copiado al portapapeles");
-    });
+    document.getElementById('copy-export').addEventListener('click', copyExportHandler);
 
     // Import dialog
     document.getElementById('close-import').addEventListener('click', () => {
@@ -291,7 +293,7 @@ export function updateDetailsDialog(result) {
 function updateVisualDecomposition(result) {
     const inputValue = result.input;
     const visualContainer = document.getElementById('patente-visual');
-    
+
     // Clear previous content
     visualContainer.innerHTML = '';
 
@@ -304,22 +306,22 @@ function updateVisualDecomposition(result) {
 
         // Create span elements for each part
         const categoriaSpan = document.createElement('span');
-        categoriaSpan.className = 'patente-part part-categoria';
+        categoriaSpan.className = 'patente-part part-categoria flex items-center justify-center';
         categoriaSpan.textContent = categoriaChar;
         categoriaSpan.title = result.categoria || 'Categoría';
 
         const numeroSpan = document.createElement('span');
-        numeroSpan.className = 'patente-part part-numero';
+        numeroSpan.className = 'patente-part part-numero flex items-center justify-center';
         numeroSpan.textContent = numeroStr;
         numeroSpan.title = 'Número asignado';
 
         const paisSpan = document.createElement('span');
-        paisSpan.className = 'patente-part part-pais';
+        paisSpan.className = 'patente-part part-pais flex items-center justify-center';
         paisSpan.textContent = paisStr;
         paisSpan.title = result.pais;
 
         const usoSpan = document.createElement('span');
-        usoSpan.className = 'patente-part part-uso';
+        usoSpan.className = 'patente-part part-uso flex items-center justify-center';
         usoSpan.textContent = usoChar;
         usoSpan.title = result.usoJefe ? 'Uso exclusivo de jefes de misiones diplomaticas' : 'Uso general';
 
@@ -333,7 +335,7 @@ function updateVisualDecomposition(result) {
     } else if (inputValue.length === 2) {
         // Just country code visualization
         const paisSpan = document.createElement('span');
-        paisSpan.className = 'patente-part part-pais';
+        paisSpan.className = 'patente-part part-pais flex items-center justify-center';
         paisSpan.textContent = result.codigo;
         paisSpan.title = result.pais;
 
@@ -401,7 +403,7 @@ function addPatente(patente, lat, lon) {
 /**
  * Update the UI list of captured plates
  */
-function actualizarLista() {
+export function actualizarLista() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const list = document.getElementById('patentes-capturadas');
 
@@ -534,9 +536,9 @@ function actualizarLista() {
                 <button type="button" id="ver-detalle" data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-700/30 text-primary-700 dark:text-primary-300 rounded hover:bg-primary-200 dark:hover:bg-primary-700/50 transition-colors">Ver detalle</button>
                 <button type="button" id="ver-mapa" data-locations='${locationData}' data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors">Ver en mapa</button>
                 <button type="button" id="eliminar-grupo" data-patente="${patenteValue}" class="px-2 py-1 text-xs bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors">${patenteInstances.length > 1 ? 'Eliminar todos' : 'Eliminar'}</button>
-                ${devMode && patenteInstances.length === 1 ? 
-                    `<button type="button" id="editar" data-patente="${patenteInstances[0].patente}" data-lat="${patenteInstances[0].lat}" data-lon="${patenteInstances[0].lon}" class="dev-button px-2 py-1 text-xs rounded hover:opacity-80" style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);">Editar</button>` 
-                    : ''}
+                ${devMode && patenteInstances.length === 1 ?
+                `<button type="button" id="editar" data-patente="${patenteInstances[0].patente}" data-lat="${patenteInstances[0].lat}" data-lon="${patenteInstances[0].lon}" class="dev-button px-2 py-1 text-xs rounded hover:opacity-80" style="background-color: var(--dev-background-color); border: 1px solid var(--dev-border-color); color: var(--dev-text-color);">Editar</button>`
+                : ''}
             </div>
         `;
 
@@ -633,7 +635,7 @@ function actualizarLista() {
 /**
  * Export captured plates to a Base64 string
  */
-function exportarPatentes() {
+export function exportarPatentes() {
     const patentes = JSON.parse(localStorage.getItem('patentes')) || [];
     const patentesString = JSON.stringify(patentes);
     const patentesBase64 = btoa(encodeURIComponent(patentesString));
@@ -652,7 +654,7 @@ function exportarPatentes() {
 /**
  * Show the import dialog
  */
-function mostrarImportarDialog() {
+export function mostrarImportarDialog() {
     const dialog = document.getElementById('import-dialog');
     dialog.showModal();
 }
@@ -660,7 +662,7 @@ function mostrarImportarDialog() {
 /**
  * Import patentes from a Base64 string
  */
-function importarPatentes() {
+export function importarPatentes() {
     const textarea = document.getElementById('import-content');
     const base64Content = textarea.value.trim();
 
@@ -707,7 +709,7 @@ function importarPatentes() {
  * Helper function to avoid code duplication in importarPatentes
  * @param {Array} patentes - Array of license plate objects to import
  */
-function performImport(patentes) {
+export function performImport(patentes) {
     localStorage.setItem('patentes', JSON.stringify(patentes));
     document.getElementById('import-dialog').close();
     actualizarLista();
@@ -778,7 +780,7 @@ function handleListClick(event) {
 /**
  * Show a confirmation dialog to delete all captured plates
  */
-function confirmarEliminarTodo() {
+export function confirmarEliminarTodo() {
     showConfirmDialog(
         'Eliminar todas las patentes',
         '¿Estás seguro que deseas eliminar TODAS las patentes? Esta acción no se puede deshacer.',
@@ -802,12 +804,13 @@ function checkDevModeInUrl() {
         devMode = true;
         document.body.classList.add('dev-mode');
     }
+    window.devMode = devMode;
 }
 
 /**
  * Toggle dev mode on and off
  */
-function toggleDevMode() {
+export function toggleDevMode() {
     if (devMode) {
         // Turning off dev mode
         devMode = false;
@@ -833,13 +836,15 @@ function toggleDevMode() {
         showInfoDialog("Modo desarrollador", "Modo desarrollador activado");
     }
 
+    window.devMode = devMode;
+
     actualizarLista();
 }
 
 /**
  * Show the dialog to create a new license plate
  */
-function mostrarCrearPatenteDialog() {
+export function mostrarCrearPatenteDialog() {
     const dialog = document.getElementById('patente-form-dialog');
     const form = document.getElementById('patente-form');
     const title = document.getElementById('patente-form-title');
@@ -862,7 +867,7 @@ function mostrarCrearPatenteDialog() {
  * @param {number} lat - Latitude
  * @param {number} lon - Longitude
  */
-function mostrarEditarPatenteDialog(patente, lat, lon) {
+export function mostrarEditarPatenteDialog(patente, lat, lon) {
     const dialog = document.getElementById('patente-form-dialog');
     const form = document.getElementById('patente-form');
     const title = document.getElementById('patente-form-title');
@@ -926,4 +931,26 @@ function guardarPatente(event) {
     localStorage.setItem('patentes', JSON.stringify(patentes));
     document.getElementById('patente-form-dialog').close();
     actualizarLista();
+}
+
+// Export these functions for testing
+export {
+    setupFormHandlers,
+    setupDialogHandlers,
+    setupDevModeHandlers,
+    setupDialogOutsideClickHandlers,
+    checkDevModeInUrl,
+    addPatente,
+    copyExportHandler,
+    devMode
+};
+
+/**
+ * Handler for copy-export button
+ */
+function copyExportHandler() {
+    const textarea = document.getElementById('export-content');
+    textarea.select();
+    document.execCommand('copy');
+    showInfoDialog("Copiado", "Código copiado al portapapeles");
 }
