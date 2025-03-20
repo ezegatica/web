@@ -363,7 +363,7 @@ export function clearSearchParams() {
  */
 export function handleCapturar() {
     clearSearchParams();
-    const patente = document.getElementById('patente').value;
+    const patente = document.getElementById('patente').value.toUpperCase();
     navigator.geolocation.getCurrentPosition((position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
@@ -545,7 +545,7 @@ export function actualizarLista() {
         li.innerHTML = `
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <p class="font-medium text-gray-900 dark:text-gray-100">${patenteValue}</p>
+                    <p class="font-medium text-gray-900 dark:text-gray-100">${patenteValue.toUpperCase()}</p>
                     ${dateSelectHtml}
                 </div>
                 <div class="mt-3 md:mt-0">
