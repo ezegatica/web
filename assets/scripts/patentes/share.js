@@ -1,4 +1,12 @@
-export function initShare() {
+import { showError, showInfoDialog } from './ui.js';
+
+let showErrorFn;
+let showInfoDialogFn;
+
+export function initShare({showErrorFn: errorFn, showInfoDialogFn: infoDialogFn}) {
+    showErrorFn = errorFn || showError;
+    showInfoDialogFn = infoDialogFn || showInfoDialog;
+    
     // Add handler for WhatsApp sharing button
     const compartirWhatsappBtn = document.getElementById('compartir-whatsapp');
     if (compartirWhatsappBtn) {
@@ -149,7 +157,7 @@ async function captureAndShareImage() {
         }
     } catch (error) {
         console.error('Error capturing image:', error);
-        showError('Ocurrió un error al generar la imagen para compartir.');
+        showErrorFn('Ocurrió un error al generar la imagen para compartir.');
     } finally {
         // Reset button state
         shareBtn.innerHTML = originalBtnText;
@@ -184,7 +192,7 @@ function fallbackShare(imageDataUrl, messageText, filename) {
         window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
 
         // Show mobile-specific instructions
-        showInfoDialog("Compartir en WhatsApp",
+        showInfoDialogFn("Compartir en WhatsApp",
             "1. La imagen se ha descargado a tu dispositivo.<br>" +
             "2. WhatsApp se abrirá en una nueva ventana con el mensaje.<br>" +
             "3. En WhatsApp, toca el botón de adjuntar (clip) y selecciona la imagen descargada.<br><br>" +
@@ -193,7 +201,7 @@ function fallbackShare(imageDataUrl, messageText, filename) {
         // On desktop: just download with instructions
         tempLink.click(); // Download image
 
-        showInfoDialog("Imagen generada",
+        showInfoDialogFn("Imagen generada",
             "La imagen se ha descargado como: " + filename + "<br><br>" +
             "Para compartirla en WhatsApp:<br>" +
             "1. Abre WhatsApp Web o la aplicación de WhatsApp<br>" +

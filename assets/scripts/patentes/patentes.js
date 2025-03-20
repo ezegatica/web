@@ -29,8 +29,11 @@ export function initApp() {
     // Add outside click handling to all static dialogs
     setupDialogOutsideClickHandlers();
 
-    // Initialize share
-    initShare();
+    // Initialize share with both functions
+    initShare({
+        showErrorFn: showError,
+        showInfoDialogFn: showInfoDialog
+    });
 }
 
 /**
@@ -807,7 +810,7 @@ function checkDevModeInUrl() {
 /**
  * Toggle dev mode on and off
  */
-function toggleDevMode() {
+export function toggleDevMode() {
     if (devMode) {
         // Turning off dev mode
         devMode = false;

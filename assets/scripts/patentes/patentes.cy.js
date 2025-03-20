@@ -65,4 +65,60 @@ describe('Patentes App E2E Tests', () => {
         cy.get('#theme-toggle').click();
         cy.get('html').should('not.have.class', 'dark');
     });
+
+    it('captures and shares a diplomatic plate', () => {
+        // Mock html2canvas
+        cy.window().then((win) => {
+            win.html2canvas = () => {
+                return Promise.resolve({
+                    toDataURL: () => 'test-data-url'
+                });
+            };
+        });
+
+        // Mock Web Share API
+        cy.window().then((win) => {
+            win.navigator.share = cy.stub().resolves();
+            win.navigator.canShare = cy.stub().returns(true);
+        });
+
+        cy.get('#patente').type('D001BGA');
+        cy.get('button[type="submit"]').first().click();
+        cy.get('#compartir-whatsapp').click();
+
+        // Verify share was attempted
+        cy.window().then((win) => {
+            expect(win.navigator.share).to.be.called;
+        });
+    });
+
+    it('handles sharing fallback when Web Share API is not available', () => {
+        // Mock html2canvas
+        cy.window().then((win) => {
+            win.html2canvas = () => {
+                return Promise.resolve({
+                    toDataURL: () => 'test-data-url'
+                });
+            };
+        });
+
+        // Mock navigator without Web Share API
+        cy.window().then((win) => {
+            delete win.navigator.share;
+            delete win.navigator.canShare;
+        });
+
+        // Mock creating and clicking download link
+        const downloadSpy = cy.stub();
+        cy.window().then((win) => {
+            cy.stub(win.HTMLAnchorElement.prototype, 'click').as('downloadClick');
+        });
+
+        cy.get('#patente').type('D001BGA');
+        cy.get('button[type="submit"]').first().click();
+        cy.get('#compartir-whatsapp').click();
+
+        // Verify download was attempted
+        cy.get('@downloadClick').should('be.called');
+    });
 });
