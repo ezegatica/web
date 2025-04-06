@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Que estoy escuchando</title>
+  <!-- <link rel="stylesheet" href="https://unpkg.com/98.css@0.1.20/dist/98.css"
+    integrity="sha256-Yi4UMGpJwUoZ9Pwp6VaBZBNAJOQh1rJrjBNFPqqn9PQ=" crossorigin="anonymous"> -->
+  <link rel="stylesheet" href="./assets/styles/98.css">
+</head>
+
+<body onload="init();">
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">¿Que está escuchando Eze?</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <p>Vista en vivo via API de Spotify</p>
+      <div class="sunken-panel" style="height: 7rem;">
+        <table class="interactive">
+          <thead>
+            <tr>
+              <th>Titulo</th>
+              <th>Artista</th>
+              <th>Album</th>
+              <th>Features</th>
+              <th style="padding-left: 1rem; padding-right: 1rem;">Cover</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="sp_title">Cargando...</td>
+              <td id="sp_artist">Cargando...</td>
+              <td id="sp_album">Cargando...</td>
+              <td id="sp_features" >Cargando...</td>
+              <td id="sp_cover" >Cargando...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <a id="sp_button_link" target="_blank">
+        <button disabled class="default" style="margin-top: 0.25rem;" id="sp_button">Escuchar tema</button>
+      </a>
+      <div class="progress-indicator segmented" style="margin-top:0.5rem">
+        <span class="progress-indicator-bar" id="sp_progress" style="width: 0%;" />
+      </div>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll('table.interactive').forEach(element => {
+      element.addEventListener('click', (event) => {
+        const highlightedClass = 'highlighted';
+        const isRow = element => element.tagName === 'TR' && element.parentElement.tagName === 'TBODY';
+        const newlySelectedRow = event.composedPath().find(isRow);
+        const previouslySelectedRow = Array.from(newlySelectedRow.parentElement.children).filter(isRow).find(element => element.classList.contains(highlightedClass));
+        if (previouslySelectedRow) {
+          previouslySelectedRow.classList.toggle(highlightedClass);
+        }
+
+        if (newlySelectedRow) {
+          newlySelectedRow.classList.toggle(highlightedClass);
+        }
+      })
+    });
+  </script>
+  <script src="./assets/scripts/spotify/loader.js"></script>
+</body>
+
+</html>
