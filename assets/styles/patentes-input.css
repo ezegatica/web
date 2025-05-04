@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  touch-action: manipulation;
+}
+
 /* Custom styles that complement Tailwind */
 :root {
   --dev-background-color: #fff3c4;

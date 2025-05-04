@@ -73,7 +73,13 @@ function setupFormHandlers() {
     });
 
     // Capture button handler
-    capturarButton.addEventListener('click', handleCapturar);
+    capturarButton.addEventListener('click', () => {
+        capturarButton.disabled = true
+        handleCapturar()
+        setTimeout(() => {
+            capturarButton.disabled = false
+        }, 2000)
+    });
 }
 
 /**
