@@ -18,11 +18,65 @@
             left: 0;
             width: 100%;
             height: 100%;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .language-toggle {
+            position: fixed;
+            top: 50px;
+            right: 50px;
+            z-index: 1000;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .language-toggle:hover {
+            background: #005a9e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .language-toggle:active {
+            transform: translateY(0);
+        }
+
+        .flag {
+            width: 20px;
+            height: 15px;
+            display: inline-block;
+            border-radius: 2px;
+        }
+
+        .flag-es {
+            background: linear-gradient(to bottom, #c41e3a 33.33%, #ffc400 33.33%, #ffc400 66.66%, #c41e3a 66.66%);
         }
     </style>
 </head>
 
 <body>
+    <a href="/cv" class="language-toggle" title="Ver en Español">
+        <span class="flag flag-es"></span>
+        Español
+    </a>
     <embed src="/assets/cv/en/Ezequiel Gatica - CV [en].pdf" width="100%" height="100%" type='application/pdf' />
 </body>
 

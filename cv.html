@@ -18,11 +18,90 @@
             left: 0;
             width: 100%;
             height: 100%;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .language-toggle {
+            position: fixed;
+            top: 50px;
+            right: 50px;
+            z-index: 1000;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .language-toggle:hover {
+            background: #005a9e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .language-toggle:active {
+            transform: translateY(0);
+        }
+
+        .flag {
+            width: 20px;
+            height: 15px;
+            display: inline-block;
+            border-radius: 2px;
+        }
+
+        .flag-us {
+            background: linear-gradient(to bottom,
+                    #B22234 0%, #B22234 7.7%,
+                    #FFFFFF 7.7%, #FFFFFF 15.4%,
+                    #B22234 15.4%, #B22234 23.1%,
+                    #FFFFFF 23.1%, #FFFFFF 30.8%,
+                    #B22234 30.8%, #B22234 38.5%,
+                    #FFFFFF 38.5%, #FFFFFF 46.2%,
+                    #B22234 46.2%, #B22234 53.9%,
+                    #FFFFFF 53.9%, #FFFFFF 61.6%,
+                    #B22234 61.6%, #B22234 69.3%,
+                    #FFFFFF 69.3%, #FFFFFF 77%,
+                    #B22234 77%, #B22234 84.7%,
+                    #FFFFFF 84.7%, #FFFFFF 92.4%,
+                    #B22234 92.4%);
+            position: relative;
+        }
+
+        .flag-us::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 50%;
+            background: #3C3B6E;
+            border-radius: 1px;
         }
     </style>
 </head>
 
 <body>
+    <a href="/cv-en" class="language-toggle" title="View in English">
+        <span class="flag flag-us"></span>
+        English
+    </a>
     <embed src="/assets/cv/es/Ezequiel Gatica - CV [es].pdf" width="100%" height="100%" type='application/pdf' />
 </body>
 
